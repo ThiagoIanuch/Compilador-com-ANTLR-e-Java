@@ -11,15 +11,69 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	/**
-	 * Visit a parse tree produced by {@link GramaticaParser#decl}.
+	 * Visit a parse tree produced by {@link GramaticaParser#programa}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitDecl(GramaticaParser.DeclContext ctx);
+	T visitPrograma(GramaticaParser.ProgramaContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GramaticaParser#type}.
+	 * Visit a parse tree produced by {@link GramaticaParser#bloco}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitType(GramaticaParser.TypeContext ctx);
+	T visitBloco(GramaticaParser.BlocoContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#declaracao}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeclaracao(GramaticaParser.DeclaracaoContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#condicao}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCondicao(GramaticaParser.CondicaoContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#repeticao_para}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRepeticao_para(GramaticaParser.Repeticao_paraContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#repeticao_enquanto}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#tipo_variavel}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTipo_variavel(GramaticaParser.Tipo_variavelContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#variavel}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitVariavel(GramaticaParser.VariavelContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#valor}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitValor(GramaticaParser.ValorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#expressao}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpressao(GramaticaParser.ExpressaoContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#operador}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOperador(GramaticaParser.OperadorContext ctx);
 }
