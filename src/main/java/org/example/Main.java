@@ -4,20 +4,29 @@ import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.example.generated.GramaticaLexer;
 import org.example.generated.GramaticaParser;
 
 public class Main {
     public static void main(String[] args) {
-        String input = "int X;";
-        CharStream charStream = CharStreams.fromString(input);
+        try {
+            Semantico semantico = new Semantico();
 
-        GramaticaLexer lexer = new GramaticaLexer(charStream);
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        GramaticaParser parser = new GramaticaParser(tokens);
+            CharStream charStream = CharStreams.fromFileName("Entrada.txt");
 
-        ParseTree tree = parser.decl();
+            GramaticaLexer lexer = new GramaticaLexer(charStream);
+            CommonTokenStream tokens = new CommonTokenStream(lexer);
+            GramaticaParser parser = new GramaticaParser(tokens);
+            ParseTreeWalker walker = new ParseTreeWalker();
 
-        System.out.println(tree.toStringTree(parser));
+            ParseTree tree = parser.programa();
+            walker.walk(semantico, tree);
+
+            System.out.println(tree.toStringTree(parser));
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
     }
 }

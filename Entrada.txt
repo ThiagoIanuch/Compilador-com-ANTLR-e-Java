@@ -1,0 +1,10 @@
+int MeuInt, MeuInt2 = -50;
+float MeuFloat = 1.10, MeuFloat2;
+bool MeuBoolean = true;
+string MinhaString = "Teste";
+
+if(1 > 10) {
+    if(MeuFloat < MeuInt2) {
+
+    }
+}
