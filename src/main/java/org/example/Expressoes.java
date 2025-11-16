@@ -109,6 +109,22 @@ public class Expressoes {
         return invalidas;
     }
 
+    public boolean expressaoFloat(GramaticaParser.Expressao_aritmeticaContext ctx) {
+        for (var ctxExpressao : ctx.children) {
+            String valor = ctxExpressao.getText();
+
+            if (valor.matches("-?\\d+\\.\\d+")) {
+                return true;
+            }
+
+            if (variaveis.variavelDeclarada(valor) && variaveis.obterVariavel(valor).getTipo() == Tipo.FLOAT) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // Funções para as expressões booleanas do IF e ELSE
     public boolean compararValores(Object valorEsquerda, String operador, Object valorDireita) {
         switch (operador) {

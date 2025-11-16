@@ -16,6 +16,7 @@ public class Semantico extends GramaticaBaseListener {
     private Expressoes expressoes = new Expressoes(variaveis);
     private Stack<Boolean> condicaoVerdadeira = new Stack<>();
     private List<String> erros = new ArrayList<>();
+    private boolean ativarDepurar = false;
 
     public List<String> getErros() {
         return erros;
@@ -29,6 +30,11 @@ public class Semantico extends GramaticaBaseListener {
         int linha = ctx.start.getLine();
         int coluna = ctx.start.getCharPositionInLine();
         erros.add("Erro na linha " + linha + ", coluna " + coluna + ": " + mensagem);
+    }
+
+    @Override
+    public void enterDepurar(GramaticaParser.DepurarContext ctx) {
+        ativarDepurar = true;
     }
 
     @Override
@@ -257,7 +263,15 @@ public class Semantico extends GramaticaBaseListener {
                     continue;
                 }
 
-                resultado = Float.toString(valorNumerico);
+                boolean expressaoFloat = expressoes.expressaoFloat(valorCtx.expressao_aritmetica());
+
+                // Isso aqui serve para a conversão para INT ou FLOAT ter um comportamento parecido com C++, então
+                // se a parte decimal do resultado for 0 ele irá converter para um inteiro
+                if (expressaoFloat && valorNumerico != (int) valorNumerico) {
+                    resultado = Float.toString(valorNumerico);
+                } else {
+                    resultado = Integer.toString((int) valorNumerico);
+                }
             }
 
             if (valorCtx.BOOLEANO() != null) {
@@ -279,7 +293,6 @@ public class Semantico extends GramaticaBaseListener {
 
     @Override
     public void enterBloco(GramaticaParser.BlocoContext ctx) {
-        //System.out.println(condicaoVerdadeira);
         if (!condicaoVerdadeira.peek()) {
             return;
         }
@@ -292,9 +305,11 @@ public class Semantico extends GramaticaBaseListener {
         variaveis.fecharEscopo();
     }
 
-    // Usado apenas para debugar, será removido depois
+    // Usado apenas quando o depurar é ativado com --debug no início do código
     @Override
     public void exitPrograma(GramaticaParser.ProgramaContext ctx) {
-        variaveis.listarVariaveis();
+        if(ativarDepurar) {
+            variaveis.listarVariaveis();
+        }
     }
 }

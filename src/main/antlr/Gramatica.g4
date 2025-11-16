@@ -1,7 +1,8 @@
 grammar Gramatica;
 
-programa: bloco EOF;
+programa: depurar? bloco EOF;
 
+depurar: DEPURAR;
 bloco: (declaracao | atribuicao | condicao | imprimir)*;
 
 declaracao:           tipo_variavel variavel (',' variavel)* ';';
@@ -21,6 +22,8 @@ fator:                NOME | INTEIRO | DECIMAL | '(' expressao_aritmetica ')';
 
 expressao_booleana:   (NOME | valor) operador (NOME | valor);
 operador:             IGUAL | DIFERENTE | MAIOR | MENOR | MAIOR_IGUAL | MENOR_IGUAL;
+
+DEPURAR:          '--debug';
 
 SE:               'if';
 ENTRADA:          'cout';
