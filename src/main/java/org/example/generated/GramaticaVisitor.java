@@ -29,23 +29,23 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitDeclaracao(GramaticaParser.DeclaracaoContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#atribuicao}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAtribuicao(GramaticaParser.AtribuicaoContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#condicao}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitCondicao(GramaticaParser.CondicaoContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GramaticaParser#repeticao_para}.
+	 * Visit a parse tree produced by {@link GramaticaParser#imprimir}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitRepeticao_para(GramaticaParser.Repeticao_paraContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link GramaticaParser#repeticao_enquanto}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx);
+	T visitImprimir(GramaticaParser.ImprimirContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#tipo_variavel}.
 	 * @param ctx the parse tree
@@ -65,11 +65,35 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitValor(GramaticaParser.ValorContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link GramaticaParser#expressao}.
+	 * Visit a parse tree produced by {@link GramaticaParser#atribuicao_simples}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitExpressao(GramaticaParser.ExpressaoContext ctx);
+	T visitAtribuicao_simples(GramaticaParser.Atribuicao_simplesContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#expressao_aritmetica}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpressao_aritmetica(GramaticaParser.Expressao_aritmeticaContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#termo}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTermo(GramaticaParser.TermoContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#fator}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFator(GramaticaParser.FatorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#expressao_booleana}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpressao_booleana(GramaticaParser.Expressao_booleanaContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#operador}.
 	 * @param ctx the parse tree

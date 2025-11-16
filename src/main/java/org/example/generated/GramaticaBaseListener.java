@@ -53,6 +53,18 @@ public class GramaticaBaseListener implements GramaticaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterAtribuicao(GramaticaParser.AtribuicaoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitAtribuicao(GramaticaParser.AtribuicaoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterCondicao(GramaticaParser.CondicaoContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -65,25 +77,13 @@ public class GramaticaBaseListener implements GramaticaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterRepeticao_para(GramaticaParser.Repeticao_paraContext ctx) { }
+	@Override public void enterImprimir(GramaticaParser.ImprimirContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitRepeticao_para(GramaticaParser.Repeticao_paraContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx) { }
+	@Override public void exitImprimir(GramaticaParser.ImprimirContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -125,13 +125,61 @@ public class GramaticaBaseListener implements GramaticaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpressao(GramaticaParser.ExpressaoContext ctx) { }
+	@Override public void enterAtribuicao_simples(GramaticaParser.Atribuicao_simplesContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExpressao(GramaticaParser.ExpressaoContext ctx) { }
+	@Override public void exitAtribuicao_simples(GramaticaParser.Atribuicao_simplesContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpressao_aritmetica(GramaticaParser.Expressao_aritmeticaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpressao_aritmetica(GramaticaParser.Expressao_aritmeticaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTermo(GramaticaParser.TermoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTermo(GramaticaParser.TermoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFator(GramaticaParser.FatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFator(GramaticaParser.FatorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpressao_booleana(GramaticaParser.Expressao_booleanaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpressao_booleana(GramaticaParser.Expressao_booleanaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
