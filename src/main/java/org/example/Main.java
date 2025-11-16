@@ -9,6 +9,9 @@ import org.example.generated.GramaticaLexer;
 import org.example.generated.GramaticaParser;
 
 public class Main {
+    public static final String RED = "\u001B[31m";
+    public static final String RESET = "\u001B[0m";
+
     public static void main(String[] args) {
         try {
             Semantico semantico = new Semantico();
@@ -22,6 +25,14 @@ public class Main {
 
             ParseTree tree = parser.programa();
             walker.walk(semantico, tree);
+
+            if (!semantico.getErros().isEmpty()) {
+                for (String erro : semantico.getErros()) {
+                    System.out.println(RED + erro + RESET);
+                }
+            } else {
+                System.out.println("\nNenhum erro semântico encontrado.\n");
+            }
 
             System.out.println(tree.toStringTree(parser));
         }

@@ -1,90 +1,273 @@
 package org.example;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import org.example.generated.GramaticaBaseListener;
 import org.example.generated.GramaticaParser;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
 public class Semantico extends GramaticaBaseListener {
     private Variaveis variaveis = new Variaveis();
+    private Expressoes expressoes = new Expressoes(variaveis);
+    private Stack<Boolean> condicaoVerdadeira = new Stack<>();
+    private List<String> erros = new ArrayList<>();
+
+    public List<String> getErros() {
+        return erros;
+    }
+
+    public Semantico() {
+        condicaoVerdadeira.push(true);
+    }
+
+    public void adicionarErro(ParserRuleContext ctx, String mensagem) {
+        int linha = ctx.start.getLine();
+        int coluna = ctx.start.getCharPositionInLine();
+        erros.add("Erro na linha " + linha + ", coluna " + coluna + ": " + mensagem);
+    }
 
     @Override
     public void enterDeclaracao(GramaticaParser.DeclaracaoContext ctx) {
+        if (!condicaoVerdadeira.peek()) {
+            return;
+        }
+
         Tipo tipo = Tipo.valueOf(ctx.tipo_variavel().getText().toUpperCase());
 
-        for (var v : ctx.variavel()) {
-            String nome = v.NOME().getText();
-            String valor = v.valor() != null ? v.valor().getText() : null;
+        for (var variavel : ctx.variavel()) {
+            String nome = variavel.NOME().getText();
+            String valor = null;
 
-            if(!variavelJaDeclarada(nome) && valorValido(tipo, nome, valor)) {
-                Object valorConvertido = converterValor(tipo, nome, valor);;
-                variaveis.adicionarVariavel(nome, new Variavel(tipo, nome, valorConvertido));
+            if(variaveis.variavelDeclarada(nome)) {
+                adicionarErro(variavel, "a variável '" + nome + "' já foi declarada anteriormente!");
             }
+
+            if (variavel.valor() != null) {
+
+                if (variavel.valor().NOME() != null) {
+                    if (!variaveis.variavelDeclarada(variavel.valor().NOME().getText())) {
+                        adicionarErro(variavel, "a variável '" + variavel.valor().NOME().getText() + "' não foi declarada!");
+                        continue;
+                    }
+
+                    valor = variaveis.obterVariavel(variavel.valor().NOME().getText()).getValor().toString();
+                }
+
+                if (variavel.valor().expressao_aritmetica() != null) {
+                    List<GramaticaParser.FatorContext> invalidas = expressoes.verificarVariaveisEmExpressao(variavel.valor().expressao_aritmetica(), nome);
+
+                    for (var fator : invalidas) {
+                        adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
+                    }
+
+                    double resultado = expressoes.avaliarExpressaoAritmetica(variavel.valor().expressao_aritmetica(), tipo);
+
+                    if (Double.isNaN(resultado)) {
+                        adicionarErro(variavel, "a variável '" + nome + "' foi atribuida com uma expressão inválida");
+                    }
+
+                    if (tipo == Tipo.INT) {
+                        valor = Integer.toString((int) resultado);
+                    }
+                    else {
+                        valor = Double.toString(resultado);
+                    }
+                }
+
+                if (variavel.valor().BOOLEANO() != null) {
+                    valor = variavel.valor().BOOLEANO().getText();
+                }
+
+                if (variavel.valor().TEXTO() != null) {
+                    valor = variavel.valor().getText();
+                }
+            }
+
+            if(!variaveis.valorValido(tipo, valor)) {
+                variaveis.adicionarVariavel(nome, new Variavel(tipo, nome, null));
+                adicionarErro(variavel, "a variável '" + nome  + "' foi declarada com o valor incorreto!");
+                continue;
+            }
+
+            Object valorConvertido = variaveis.converterValor(tipo, valor);
+            variaveis.adicionarVariavel(nome, new Variavel(tipo, nome, valorConvertido));
         }
     }
 
     @Override
+    public void enterAtribuicao(GramaticaParser.AtribuicaoContext ctx) {
+        if (!condicaoVerdadeira.peek()) {
+            return;
+        }
+
+        for (GramaticaParser.Atribuicao_simplesContext simplesCtx : ctx.atribuicao_simples()) {
+            String nome = simplesCtx.NOME().getText();
+
+            if (!variaveis.variavelDeclarada(nome)) {
+                adicionarErro(simplesCtx, "a variável '" + nome + "' não foi declarada!");
+                continue;
+            }
+
+            Variavel variavelExistente = variaveis.obterVariavel(nome);
+            Tipo tipo = variavelExistente.getTipo();
+
+            GramaticaParser.ValorContext valorCtx = simplesCtx.valor();
+            String valor = null;
+
+            if (valorCtx.NOME() != null) {
+                if (!variaveis.variavelDeclarada(valorCtx.NOME().getText())) {
+                    adicionarErro(valorCtx, "a variável '" + valorCtx.NOME().getText() + "' não foi declarada!");
+                    continue;
+                }
+
+                valor = variaveis.obterVariavel(valorCtx.NOME().getText()).getValor().toString();
+            }
+
+            if (valorCtx.expressao_aritmetica() != null) {
+                var invalidas = expressoes.verificarVariaveisEmExpressao(valorCtx.expressao_aritmetica(), nome);
+
+                for (var fator : invalidas) {
+                    adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
+                }
+
+                double resultado = expressoes.avaliarExpressaoAritmetica(valorCtx.expressao_aritmetica(), tipo);
+
+                if (Double.isNaN(resultado)) {
+                    adicionarErro(simplesCtx, "a variável '" + nome + "' recebeu uma expressão inválida");
+                    continue;
+                }
+
+                if (tipo == Tipo.INT) {
+                    valor = Integer.toString((int) resultado);
+                }
+                else {
+                    valor = Double.toString(resultado);
+                }
+            }
+            if (valorCtx.BOOLEANO() != null) {
+                valor = valorCtx.BOOLEANO().getText();
+            }
+            if (valorCtx.TEXTO() != null) {
+                valor = valorCtx.TEXTO().getText();
+            }
+            
+            if (!variaveis.valorValido(tipo, valor)) {
+                adicionarErro(simplesCtx, "a variável '" + nome + "' foi atribuída com um valor incompatível!");
+                continue;
+            }
+
+            Object valorConvertido = variaveis.converterValor(tipo, valor);
+            variavelExistente.setValor(valorConvertido);
+        }
+    }
+
+    @Override
+    public void enterCondicao(GramaticaParser.CondicaoContext ctx) {
+        if (!condicaoVerdadeira.peek()) {
+            condicaoVerdadeira.push(false);
+            return;
+        }
+
+        ParseTree esquerda = ctx.expressao_booleana().children.get(0);
+        String operador = ctx.expressao_booleana().operador().getText();
+        ParseTree direita = ctx.expressao_booleana().children.get(2);
+        Object valorEsquerda = null;
+        Object valorDireita = null;
+
+        // Primeiro verifica se o valor da esquerda e direita veio de 'NOME' ou de 'valor', se veio de 'NOME' quer dizer que é uma variável, se não é um valor.
+        // Se for uma variável então verifica se a variável existe ou não e obtem o seu valor, se não for apenas passa o valor digitado.
+        if (esquerda instanceof TerminalNode && ((TerminalNode) esquerda).getSymbol().getType() == GramaticaParser.NOME) {
+            if(!variaveis.variavelDeclarada(esquerda.getText())) {
+                throw new RuntimeException("Erro: a variavel " + esquerda.getText() + " não foi declarada anteriormente!");
+            }
+            valorEsquerda = variaveis.obterVariavel(esquerda.getText()).getValor();
+        }
+        else {
+            valorEsquerda = expressoes.converterValor(esquerda.getText());
+        }
+
+        if (direita instanceof TerminalNode && ((TerminalNode) direita).getSymbol().getType() == GramaticaParser.NOME) {
+            if(!variaveis.variavelDeclarada(direita.getText())) {
+                throw new RuntimeException("Erro: a variavel " + direita.getText() + " não foi declarada anteriormente!");
+            }
+            valorDireita = variaveis.obterVariavel(direita.getText()).getValor();
+        }
+        else {
+            valorDireita = expressoes.converterValor(direita.getText());
+        }
+
+        boolean resultado = expressoes.compararValores(valorEsquerda, operador, valorDireita);
+
+        condicaoVerdadeira.push(resultado);
+    }
+
+    @Override
+    public void exitCondicao(GramaticaParser.CondicaoContext ctx) {
+        condicaoVerdadeira.pop();
+    }
+
+    // Ainda precisa ser revisado
+    @Override
+    public void enterImprimir(GramaticaParser.ImprimirContext ctx) {
+        if (!condicaoVerdadeira.peek()) return;
+
+        StringBuilder saida = new StringBuilder();
+
+        for (GramaticaParser.ValorContext valorCtx : ctx.valor()) {
+            String resultado = null;
+
+            if (valorCtx.NOME() != null) {
+                if (!variaveis.variavelDeclarada(valorCtx.NOME().getText())) {
+                    adicionarErro(valorCtx, "a variável '" + valorCtx.NOME().getText() + "' não foi declarada!");
+                    continue;
+                }
+
+                resultado = variaveis.obterVariavel(valorCtx.NOME().getText()).getValor().toString();
+            }
+
+            if (valorCtx.expressao_aritmetica() != null) {
+                double valorNumerico = expressoes.avaliarExpressaoAritmetica(valorCtx.expressao_aritmetica(), null);
+                resultado = Double.toString(valorNumerico);
+            }
+
+            if (valorCtx.BOOLEANO() != null) {
+                resultado = valorCtx.BOOLEANO().getText();
+            }
+
+            if (valorCtx.TEXTO() != null) {
+                String texto = valorCtx.TEXTO().getText();
+                resultado = texto.substring(1, texto.length() - 1);
+            }
+
+            if (resultado != null) {
+                saida.append(resultado);
+            }
+        }
+
+        System.out.println(saida.toString());
+    }
+
+    @Override
+    public void enterBloco(GramaticaParser.BlocoContext ctx) {
+        //System.out.println(condicaoVerdadeira);
+        if (!condicaoVerdadeira.peek()) {
+            return;
+        }
+
+    }
+
+    @Override
+    public void exitBloco(GramaticaParser.BlocoContext ctx) {
+
+    }
+
+    // Usado apenas para debugar, será removido depois
+    @Override
     public void exitPrograma(GramaticaParser.ProgramaContext ctx) {
         variaveis.listarVariaveis();
-    }
-
-    public boolean variavelJaDeclarada(String nome) {
-        if(variaveis.variavelExistente(nome)) {
-            throw new RuntimeException("Erro: a variável " + nome + " já foi declarada anteriormente!");
-        }
-
-        return false;
-    }
-
-    public boolean valorValido(Tipo tipo, String nome, String valor) {
-        if(valor == null) {
-            return true;
-        }
-
-        switch(tipo) {
-            case INT:
-                if (valor.matches("\".*\"") || !valor.matches("-?[0-9]+")) {
-                    throw new RuntimeException("Erro: a variável " + nome + " do tipo " + tipo + " foi declarada com um valor incorreto!");
-                }
-                return true;
-
-            case FLOAT:
-                if (valor.matches("\".*\"") || !valor.matches("-?[0-9]+(\\.[0-9]+)?")) {
-                    throw new RuntimeException("Erro: a variável " + nome + " do tipo " + tipo + " foi declarada com um valor incorreto!");
-                }
-                return true;
-
-            case BOOL:
-                if(!valor.equals("true") && !valor.equals("false")) {
-                    throw new RuntimeException("Erro: a variável " + nome + " do tipo " + tipo + " foi declarada com um valor incorreto!");
-                }
-                return true;
-
-            case STRING:
-                if (!valor.matches("\".*\"")) {
-                    throw new RuntimeException("Erro: a variável " + nome + " do tipo " + tipo + " foi declarada com um valor incorreto!");
-                }
-                return true;
-
-            default:
-                throw new RuntimeException("Erro: a variável " + nome + " do tipo " + tipo + " foi declarada com um valor incorreto!");
-        }
-    }
-
-    public Object converterValor(Tipo tipo, String nome, String valor) {
-        if(valor == null) {
-            return null;
-        }
-
-        switch (tipo) {
-            case INT:
-                return Integer.parseInt(valor);
-            case FLOAT:
-                return Float.parseFloat(valor);
-            case BOOL:
-                return Boolean.parseBoolean(valor);
-            case STRING:
-                return valor;
-            default:
-                throw new RuntimeException("Erro: a variável " + nome + " do tipo " + tipo + " foi declarada com um valor incorreto!");
-        }
     }
 }
