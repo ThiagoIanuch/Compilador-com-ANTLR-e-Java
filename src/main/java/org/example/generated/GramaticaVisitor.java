@@ -17,6 +17,12 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitPrograma(GramaticaParser.ProgramaContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#depurar}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDepurar(GramaticaParser.DepurarContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#bloco}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
