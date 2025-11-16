@@ -14,14 +14,14 @@ public class Expressoes {
     }
 
     // Funções para realizar as avaliações das expressões aritméticas
-    public double avaliarExpressaoAritmetica(GramaticaParser.Expressao_aritmeticaContext ctx, Tipo tipoVariavel) {
-        double resultado = avaliarTermo(ctx.termo(0), tipoVariavel);
+    public float avaliarExpressaoAritmetica(GramaticaParser.Expressao_aritmeticaContext ctx, Tipo tipoVariavel) {
+        float resultado = avaliarTermo(ctx.termo(0), tipoVariavel);
 
         int operadorIndex = 1;
 
         for (int i = 1; i < ctx.termo().size(); i++) {
             String operador = ctx.getChild(operadorIndex).getText();
-            double valor = avaliarTermo(ctx.termo(i), tipoVariavel);
+            float valor = avaliarTermo(ctx.termo(i), tipoVariavel);
 
             if (operador.equals("+")) {
                 resultado += valor;
@@ -36,13 +36,13 @@ public class Expressoes {
         return resultado;
     }
 
-    public double avaliarTermo(GramaticaParser.TermoContext ctx, Tipo tipoVariavel) {
-        double resultado = avaliarFator(ctx.fator(0), tipoVariavel);
+    public float avaliarTermo(GramaticaParser.TermoContext ctx, Tipo tipoVariavel) {
+        float resultado = avaliarFator(ctx.fator(0), tipoVariavel);
 
         int operadorIndex = 1;
         for (int i = 1; i < ctx.fator().size(); i++) {
             String operador = ctx.getChild(operadorIndex).getText();
-            double valor = avaliarFator(ctx.fator(i), tipoVariavel);
+            float valor = avaliarFator(ctx.fator(i), tipoVariavel);
 
             if (operador.equals("*")) {
                 resultado *= valor;
@@ -57,20 +57,20 @@ public class Expressoes {
         return resultado;
     }
 
-    public double avaliarFator(GramaticaParser.FatorContext ctx, Tipo tipoVariavel) {
+    public float avaliarFator(GramaticaParser.FatorContext ctx, Tipo tipoVariavel) {
         if (ctx.NOME() != null) {
             if(!variaveis.variavelDeclarada(ctx.NOME().getText()) ){
                 Random random = new Random();
-                return random.nextDouble(30000);
+                return random.nextFloat(30000);
             }
 
             if (variaveis.obterVariavel(ctx.NOME().getText()).getTipo() == Tipo.BOOL ||
                     variaveis.obterVariavel(ctx.NOME().getText()).getTipo() == Tipo.STRING) {
-                return Double.NaN;
+                return Float.NaN;
             }
 
             Variavel variavel = variaveis.obterVariavel(ctx.NOME().getText());
-            return ((Number) variavel.getValor()).doubleValue();
+            return ((Number) variavel.getValor()).floatValue();
         }
 
         if (ctx.INTEIRO() != null) {
@@ -78,14 +78,14 @@ public class Expressoes {
         }
 
         if (ctx.DECIMAL() != null) {
-            return Double.parseDouble(ctx.DECIMAL().getText());
+            return Float.parseFloat(ctx.DECIMAL().getText());
         }
 
         if (ctx.expressao_aritmetica() != null) {
             return avaliarExpressaoAritmetica(ctx.expressao_aritmetica(), tipoVariavel);
         }
 
-        return Double.NaN;
+        return Float.NaN;
     }
 
     // Função para verificar quais variáveis existem na expressão para saber se elas já foram declaradas ou não
@@ -117,13 +117,13 @@ public class Expressoes {
             case "!=":
                 return !valorEsquerda.equals(valorDireita);
             case ">=":
-                return ((Number) valorEsquerda).doubleValue() >= ((Number) valorDireita).doubleValue();
+                return ((Number) valorEsquerda).floatValue() >= ((Number) valorDireita).floatValue();
             case "<=":
-                return ((Number) valorEsquerda).doubleValue() <= ((Number) valorDireita).doubleValue();
+                return ((Number) valorEsquerda).floatValue() <= ((Number) valorDireita).floatValue();
             case ">":
-                return ((Number) valorEsquerda).doubleValue() > ((Number) valorDireita).doubleValue();
+                return ((Number) valorEsquerda).floatValue() > ((Number) valorDireita).floatValue();
             case "<":
-                return ((Number) valorEsquerda).doubleValue() < ((Number) valorDireita).doubleValue();
+                return ((Number) valorEsquerda).floatValue() < ((Number) valorDireita).floatValue();
             default:
                 return false;
         }
@@ -134,7 +134,7 @@ public class Expressoes {
             return Integer.parseInt(valor);
         }
         if (valor.matches("-?[0-9]+(\\.[0-9]+)?")) {
-            return Double.parseDouble(valor);
+            return Float.parseFloat(valor);
         }
         if (valor.equals("true") || valor.equals("false")) {
             return Boolean.parseBoolean(valor);

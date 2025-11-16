@@ -65,9 +65,9 @@ public class Semantico extends GramaticaBaseListener {
                         adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
                     }
 
-                    double resultado = expressoes.avaliarExpressaoAritmetica(variavel.valor().expressao_aritmetica(), tipo);
+                    float resultado = expressoes.avaliarExpressaoAritmetica(variavel.valor().expressao_aritmetica(), tipo);
 
-                    if (Double.isNaN(resultado)) {
+                    if (Float.isNaN(resultado)) {
                         adicionarErro(variavel, "a variável '" + nome + "' foi atribuida com uma expressão inválida");
                         continue;
                     }
@@ -76,7 +76,7 @@ public class Semantico extends GramaticaBaseListener {
                         valor = Integer.toString((int) resultado);
                     }
                     else {
-                        valor = Double.toString(resultado);
+                        valor = Float.toString(resultado);
                     }
                 }
 
@@ -94,7 +94,7 @@ public class Semantico extends GramaticaBaseListener {
 
                 switch (tipo) {
                     case INT -> valor = Integer.toString(random.nextInt(30000));
-                    case FLOAT -> Float.toString(random.nextFloat() * 30000f);
+                    case FLOAT -> Float.toString(random.nextFloat() * 30000);
                     case BOOL -> valor = "false";
                     case STRING -> valor = "\"\"";
                 }
@@ -148,9 +148,9 @@ public class Semantico extends GramaticaBaseListener {
                     adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
                 }
 
-                double resultado = expressoes.avaliarExpressaoAritmetica(valorCtx.expressao_aritmetica(), tipo);
+                float resultado = expressoes.avaliarExpressaoAritmetica(valorCtx.expressao_aritmetica(), tipo);
 
-                if (Double.isNaN(resultado)) {
+                if (Float.isNaN(resultado)) {
                     adicionarErro(simplesCtx, "a variável '" + nome + "' recebeu uma expressão inválida");
                     continue;
                 }
@@ -159,7 +159,7 @@ public class Semantico extends GramaticaBaseListener {
                     valor = Integer.toString((int) resultado);
                 }
                 else {
-                    valor = Double.toString(resultado);
+                    valor = Float.toString(resultado);
                 }
             }
             if (valorCtx.BOOLEANO() != null) {
@@ -250,14 +250,14 @@ public class Semantico extends GramaticaBaseListener {
                     adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
                 }
 
-                double valorNumerico = expressoes.avaliarExpressaoAritmetica(valorCtx.expressao_aritmetica(), null);
+                float valorNumerico = expressoes.avaliarExpressaoAritmetica(valorCtx.expressao_aritmetica(), null);
 
-                if (Double.isNaN(valorNumerico)) {
+                if (Float.isNaN(valorNumerico)) {
                     adicionarErro(valorCtx, "a expressão informada é inválida");
                     continue;
                 }
 
-                resultado = Double.toString(valorNumerico);
+                resultado = Float.toString(valorNumerico);
             }
 
             if (valorCtx.BOOLEANO() != null) {
