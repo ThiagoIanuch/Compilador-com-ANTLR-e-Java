@@ -21,8 +21,7 @@ public class GramaticaParser extends Parser {
 		SOMA=10, SUBTRACAO=11, MULTIPLICACAO=12, DIVISAO=13, IGUAL=14, DIFERENTE=15, 
 		MAIOR_IGUAL=16, MENOR_IGUAL=17, MAIOR=18, MENOR=19, ATRIBUICAO=20, TIPO_INTEIRO=21, 
 		TIPO_DECIMAL=22, TIPO_TEXTO=23, TIPO_BOOLEANO=24, INTEIRO=25, DECIMAL=26, 
-		TEXTO=27, BOOLEANO=28, NOME=29, ESPACO=30, COMENTARIO_LINHA=31, COMENTARIO_BLOCO=32, 
-		SENAO=33, ENQUANTO=34, PARA=35;
+		TEXTO=27, BOOLEANO=28, NOME=29, ESPACO=30, COMENTARIO_LINHA=31, COMENTARIO_BLOCO=32;
 	public static final int
 		RULE_programa = 0, RULE_bloco = 1, RULE_declaracao = 2, RULE_atribuicao = 3, 
 		RULE_condicao = 4, RULE_imprimir = 5, RULE_tipo_variavel = 6, RULE_variavel = 7, 
@@ -41,8 +40,7 @@ public class GramaticaParser extends Parser {
 		return new String[] {
 			null, "','", "';'", "'('", "')'", "'{'", "'}'", "'<<'", "'if'", "'cout'", 
 			"'+'", "'-'", "'*'", "'/'", "'=='", "'!='", "'>='", "'<='", "'>'", "'<'", 
-			"'='", "'int'", "'float'", "'string'", "'bool'", null, null, null, null, 
-			null, null, null, null, "'else'", "'while'", "'for'"
+			"'='", "'int'", "'float'", "'string'", "'bool'"
 		};
 	}
 	private static final String[] _LITERAL_NAMES = makeLiteralNames();
@@ -52,8 +50,7 @@ public class GramaticaParser extends Parser {
 			"SUBTRACAO", "MULTIPLICACAO", "DIVISAO", "IGUAL", "DIFERENTE", "MAIOR_IGUAL", 
 			"MENOR_IGUAL", "MAIOR", "MENOR", "ATRIBUICAO", "TIPO_INTEIRO", "TIPO_DECIMAL", 
 			"TIPO_TEXTO", "TIPO_BOOLEANO", "INTEIRO", "DECIMAL", "TEXTO", "BOOLEANO", 
-			"NOME", "ESPACO", "COMENTARIO_LINHA", "COMENTARIO_BLOCO", "SENAO", "ENQUANTO", 
-			"PARA"
+			"NOME", "ESPACO", "COMENTARIO_LINHA", "COMENTARIO_BLOCO"
 		};
 	}
 	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
@@ -1160,7 +1157,7 @@ public class GramaticaParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\u0004\u0001#\u0086\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
+		"\u0004\u0001 \u0086\u0002\u0000\u0007\u0000\u0002\u0001\u0007\u0001\u0002"+
 		"\u0002\u0007\u0002\u0002\u0003\u0007\u0003\u0002\u0004\u0007\u0004\u0002"+
 		"\u0005\u0007\u0005\u0002\u0006\u0007\u0006\u0002\u0007\u0007\u0007\u0002"+
 		"\b\u0007\b\u0002\t\u0007\t\u0002\n\u0007\n\u0002\u000b\u0007\u000b\u0002"+

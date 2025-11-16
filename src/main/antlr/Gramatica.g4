@@ -44,7 +44,7 @@ TIPO_BOOLEANO:    'bool';
 
 INTEIRO:          '-'?[0-9]+;
 DECIMAL:          '-'?[0-9]+'.'[0-9]+;
-TEXTO:            '"' (~["\\\r\n])* '"';
+TEXTO:            '"' (~["\\\r]|'\\n')* '"';
 BOOLEANO:         'true' | 'false';
 NOME:             [a-zA-Z][a-zA-Z0-9]*;
 

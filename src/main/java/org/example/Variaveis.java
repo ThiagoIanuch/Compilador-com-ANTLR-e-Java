@@ -1,20 +1,56 @@
 package org.example;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Stack;
 
 public class Variaveis {
-    private LinkedHashMap<String, Variavel> variaveis = new LinkedHashMap<>();
+    private Stack<LinkedHashMap<String, Variavel>> escopos = new Stack<>();
+
+    private List<LinkedHashMap<String, Variavel>> escoposFechados = new ArrayList<>(); // USADO APENAS PARA DEBUGAR
+
+    public Variaveis() {
+        escopos.push(new LinkedHashMap<>());
+    }
+
+    public void abrirEscopo() {
+        escopos.push(new LinkedHashMap<>());
+    }
+
+    public void fecharEscopo() {
+
+        if (escopos.size() > 1) {
+            //escopos.pop();
+            LinkedHashMap<String, Variavel> escopoFechado = escopos.pop();
+            escoposFechados.add(escopoFechado);
+        }
+    }
 
     public void adicionarVariavel(String nome, Variavel variavel) {
-        variaveis.put(nome, variavel);
+        escopos.peek().put(nome, variavel);
     }
 
     public Variavel obterVariavel(String nome) {
-        return variaveis.get(nome);
+        for (int i = escopos.size() - 1; i >= 0; i--) {
+            if (escopos.get(i).containsKey(nome)) {
+                return escopos.get(i).get(nome);
+            }
+        }
+        return null;
     }
 
     public boolean variavelDeclarada(String nome) {
-        return variaveis.containsKey(nome);
+        for (int i = escopos.size() - 1; i >= 0; i--) {
+            if (escopos.get(i).containsKey(nome)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean variavelDeclaradaNoEscopoAtual(String nome) {
+        return escopos.peek().containsKey(nome);
     }
 
     public boolean valorValido(Tipo tipo, String valor) {
@@ -73,10 +109,20 @@ public class Variaveis {
 
     // Usado apenas para debugar, será removido
     public void listarVariaveis() {
-        System.out.println("\nVariáveis declaradas: ");
-        for (var entry : variaveis.entrySet()) {
-            System.out.println(entry.getValue());
+        System.out.println("\nVariáveis declaradas por escopo:");
+
+        int nivel = 0;
+
+        // Lista escopos já fechados
+        for (int i = escoposFechados.size() - 1; i >= 0; i--) {
+            LinkedHashMap<String, Variavel> escopo = escoposFechados.get(i);
+            System.out.println("Escopo nível " + nivel + " (fechado):");
+            for (var entry : escopo.entrySet()) {
+                System.out.println("  " + entry.getValue());
+            }
+            nivel++;
         }
     }
+
 
 }

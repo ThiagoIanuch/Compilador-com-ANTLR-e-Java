@@ -8,6 +8,7 @@ import org.example.generated.GramaticaParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 public class Semantico extends GramaticaBaseListener {
@@ -42,8 +43,8 @@ public class Semantico extends GramaticaBaseListener {
             String nome = variavel.NOME().getText();
             String valor = null;
 
-            if(variaveis.variavelDeclarada(nome)) {
-                adicionarErro(variavel, "a variável '" + nome + "' já foi declarada anteriormente!");
+            if(variaveis.variavelDeclaradaNoEscopoAtual(nome)) {
+                adicionarErro(variavel, "a variável '" + nome + "' já foi declarada neste escopo!");
             }
 
             if (variavel.valor() != null) {
@@ -68,6 +69,7 @@ public class Semantico extends GramaticaBaseListener {
 
                     if (Double.isNaN(resultado)) {
                         adicionarErro(variavel, "a variável '" + nome + "' foi atribuida com uma expressão inválida");
+                        continue;
                     }
 
                     if (tipo == Tipo.INT) {
@@ -87,11 +89,23 @@ public class Semantico extends GramaticaBaseListener {
                 }
             }
 
+            if (valor == null) {
+                Random random = new Random();
+
+                switch (tipo) {
+                    case INT -> valor = Integer.toString(random.nextInt(30000));
+                    case FLOAT -> Float.toString(random.nextFloat() * 30000f);
+                    case BOOL -> valor = "false";
+                    case STRING -> valor = "\"\"";
+                }
+            }
+            
             if(!variaveis.valorValido(tipo, valor)) {
                 variaveis.adicionarVariavel(nome, new Variavel(tipo, nome, null));
                 adicionarErro(variavel, "a variável '" + nome  + "' foi declarada com o valor incorreto!");
                 continue;
             }
+
 
             Object valorConvertido = variaveis.converterValor(tipo, valor);
             variaveis.adicionarVariavel(nome, new Variavel(tipo, nome, valorConvertido));
@@ -104,7 +118,7 @@ public class Semantico extends GramaticaBaseListener {
             return;
         }
 
-        for (GramaticaParser.Atribuicao_simplesContext simplesCtx : ctx.atribuicao_simples()) {
+        for (var simplesCtx : ctx.atribuicao_simples()) {
             String nome = simplesCtx.NOME().getText();
 
             if (!variaveis.variavelDeclarada(nome)) {
@@ -217,7 +231,7 @@ public class Semantico extends GramaticaBaseListener {
 
         StringBuilder saida = new StringBuilder();
 
-        for (GramaticaParser.ValorContext valorCtx : ctx.valor()) {
+        for (var valorCtx : ctx.valor()) {
             String resultado = null;
 
             if (valorCtx.NOME() != null) {
@@ -230,7 +244,19 @@ public class Semantico extends GramaticaBaseListener {
             }
 
             if (valorCtx.expressao_aritmetica() != null) {
+                var invalidas = expressoes.verificarVariaveisEmExpressao(valorCtx.expressao_aritmetica(), null);
+
+                for (var fator : invalidas) {
+                    adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
+                }
+
                 double valorNumerico = expressoes.avaliarExpressaoAritmetica(valorCtx.expressao_aritmetica(), null);
+
+                if (Double.isNaN(valorNumerico)) {
+                    adicionarErro(valorCtx, "a expressão informada é inválida");
+                    continue;
+                }
+
                 resultado = Double.toString(valorNumerico);
             }
 
@@ -240,7 +266,7 @@ public class Semantico extends GramaticaBaseListener {
 
             if (valorCtx.TEXTO() != null) {
                 String texto = valorCtx.TEXTO().getText();
-                resultado = texto.substring(1, texto.length() - 1);
+                resultado = texto.substring(1, texto.length() - 1).replace("\\n", "\n");
             }
 
             if (resultado != null) {
@@ -248,7 +274,7 @@ public class Semantico extends GramaticaBaseListener {
             }
         }
 
-        System.out.println(saida.toString());
+        System.out.print(saida.toString());
     }
 
     @Override
@@ -258,11 +284,12 @@ public class Semantico extends GramaticaBaseListener {
             return;
         }
 
+        variaveis.abrirEscopo();
     }
 
     @Override
     public void exitBloco(GramaticaParser.BlocoContext ctx) {
-
+        variaveis.fecharEscopo();
     }
 
     // Usado apenas para debugar, será removido depois

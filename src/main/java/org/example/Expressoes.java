@@ -4,6 +4,7 @@ import org.example.generated.GramaticaParser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Expressoes {
     private Variaveis variaveis;
@@ -59,7 +60,13 @@ public class Expressoes {
     public double avaliarFator(GramaticaParser.FatorContext ctx, Tipo tipoVariavel) {
         if (ctx.NOME() != null) {
             if(!variaveis.variavelDeclarada(ctx.NOME().getText()) ){
-               return 0;
+                Random random = new Random();
+                return random.nextDouble(30000);
+            }
+
+            if (variaveis.obterVariavel(ctx.NOME().getText()).getTipo() == Tipo.BOOL ||
+                    variaveis.obterVariavel(ctx.NOME().getText()).getTipo() == Tipo.STRING) {
+                return Double.NaN;
             }
 
             Variavel variavel = variaveis.obterVariavel(ctx.NOME().getText());
