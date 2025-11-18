@@ -1,13 +1,13 @@
 grammar Gramatica;
 
-programa: depurar? bloco EOF;
+programa:             depurar? bloco EOF;
 
-depurar: DEPURAR;
-bloco: (declaracao | atribuicao | condicao | imprimir | ler)*;
+depurar:              DEPURAR;
+bloco:                (declaracao | atribuicao | condicao | imprimir | ler)*;
 
 declaracao:           tipo_variavel variavel (',' variavel)* ';';
 atribuicao:           atribuicao_simples (',' atribuicao_simples)* ';';
-condicao:             SE '(' expressao_booleana ')' '{' bloco '}';
+condicao:             SE '(' expressao_booleana ')' '{' bloco '}' (SENAO '{' bloco '}')?;
 imprimir:             IMPRIMIR ( SAIDA valor )+ ';';
 ler:                  LER (ENTRADA NOME)+ ';';
 
@@ -27,8 +27,11 @@ operador:             IGUAL | DIFERENTE | MAIOR | MENOR | MAIOR_IGUAL | MENOR_IG
 DEPURAR:          '--debug';
 
 SE:               'if';
+SENAO:            'else';
 IMPRIMIR:         'cout';
 LER:              'cin';
+ENQUANTO:         'while';
+PARA:             'for';
 
 SOMA:             '+';
 SUBTRACAO:        '-';
@@ -60,9 +63,5 @@ COMENTARIO_LINHA: '//' ~[\r\n]* -> skip;
 COMENTARIO_BLOCO: '/*' .*? '*/' -> skip;
 
 // AINDA PRECISA SER IMPLEMENTANDO
-//SENAO:            'else';
-//ENQUANTO:         'while';
-//PARA:             'for';
 //repeticao_para: PARA ABRE_PARENTESES FECHA_PARENTESES ABRE_CHAVES FECHA_CHAVES;
 //repeticao_enquanto: ENQUANTO ABRE_PARENTESES FECHA_PARENTESES ABRE_CHAVES FECHA_CHAVES;
-// atribuicao: NOME ATRIBUICAO valor PONTO_VIRGULA;

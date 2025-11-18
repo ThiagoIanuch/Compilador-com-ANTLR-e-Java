@@ -1,10 +1,12 @@
 package org.example;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import org.example.generated.GramaticaParser;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Stack;
 
 public class Expressoes {
     private Variaveis variaveis;
@@ -170,5 +172,38 @@ public class Expressoes {
         }
 
         return null;
+    }
+
+    // Essa parte é necessária para verificar se está dentro do IF ou do ELSE e assim decidir se o que está lá dentro
+    // deve ser executado ou não
+    public boolean podeExecutar(ParseTree ctx, Stack<Boolean> condicaoVerdadeira, Stack<Boolean> deveExecutarSenao) {
+        ParseTree atual = ctx;
+        GramaticaParser.BlocoContext blocoAtual = null;
+        GramaticaParser.CondicaoContext condicaoPai = null;
+
+        while (atual != null) {
+            if (atual instanceof GramaticaParser.BlocoContext bloco) {
+                ParseTree pai = bloco.getParent();
+                if (pai instanceof GramaticaParser.CondicaoContext cond) {
+                    blocoAtual = bloco;
+                    condicaoPai = cond;
+                    break;
+                }
+            }
+            atual = atual.getParent();
+        }
+
+        if (condicaoPai == null || blocoAtual == null) {
+            return true;
+        }
+
+        if (condicaoPai.bloco(0) == blocoAtual) {
+            return !condicaoVerdadeira.isEmpty() && condicaoVerdadeira.peek();
+        }
+        else if (condicaoPai.bloco().size() > 1 && condicaoPai.bloco(1) == blocoAtual) {
+            return !deveExecutarSenao.isEmpty() && deveExecutarSenao.peek();
+        }
+
+        return false;
     }
 }

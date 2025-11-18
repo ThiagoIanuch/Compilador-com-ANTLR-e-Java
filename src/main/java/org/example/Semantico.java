@@ -14,6 +14,7 @@ public class Semantico extends GramaticaBaseListener {
     private List<String> erros = new ArrayList<>();
     private List<Comandos> comandos = new ArrayList<>();
     private Stack<Boolean> condicaoVerdadeira = new Stack<>();
+    private Stack<Boolean> deveExecutarSenao = new Stack<>();
     private boolean ativarDepurar = false;
 
     public List<String> getErros() {
@@ -49,10 +50,6 @@ public class Semantico extends GramaticaBaseListener {
 
     @Override
     public void enterDeclaracao(GramaticaParser.DeclaracaoContext ctx) {
-        /*if (!condicaoVerdadeira.peek()) {
-            return;
-        }*/
-
         Tipo tipo = Tipo.valueOf(ctx.tipo_variavel().getText().toUpperCase());
 
         for (var variavel : ctx.variavel()) {
@@ -128,7 +125,7 @@ public class Semantico extends GramaticaBaseListener {
             Object valorConvertido = variaveis.converterValor(tipo, valor);
             variaveis.adicionarVariavel(nome, new Variavel(tipo, nome, valorConvertido));
 
-            if (condicaoVerdadeira.peek()) {
+            if (expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
                 comandos.add(new Comandos("Declarar", variavel));;
             }
         }
@@ -136,10 +133,6 @@ public class Semantico extends GramaticaBaseListener {
 
     @Override
     public void enterAtribuicao(GramaticaParser.AtribuicaoContext ctx) {
-        /*if (!condicaoVerdadeira.peek()) {
-            return;
-        }*/
-
         for (var simplesCtx : ctx.atribuicao_simples()) {
             String nome = simplesCtx.NOME().getText();
 
@@ -203,7 +196,7 @@ public class Semantico extends GramaticaBaseListener {
             Object valorConvertido = variaveis.converterValor(tipo, valor);
             variavelExistente.setValor(valorConvertido);
 
-            if (condicaoVerdadeira.peek()) {
+            if (expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
                 comandos.add(new Comandos("Atribuir", simplesCtx));
             }
         }
@@ -241,26 +234,24 @@ public class Semantico extends GramaticaBaseListener {
 
         boolean resultado = expressoes.compararValores(valorEsquerda, operador, valorDireita);
 
-        if (!condicaoVerdadeira.peek()) {
+        if(!expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
             condicaoVerdadeira.push(false);
+            deveExecutarSenao.push(false);
             return;
         }
-        else {
-            condicaoVerdadeira.push(resultado);
-        }
+
+        condicaoVerdadeira.push(resultado);
+        deveExecutarSenao.push(!resultado);
     }
 
     @Override
     public void exitCondicao(GramaticaParser.CondicaoContext ctx) {
         condicaoVerdadeira.pop();
+        deveExecutarSenao.pop();
     }
 
     @Override
     public void enterImprimir(GramaticaParser.ImprimirContext ctx) {
-        /*if (!condicaoVerdadeira.peek()) {
-            return;
-        }*/
-
         for (var valorCtx : ctx.valor()) {
             if (valorCtx.NOME() != null) {
                 if (!variaveis.variavelDeclarada(valorCtx.NOME().getText())) {
@@ -285,7 +276,7 @@ public class Semantico extends GramaticaBaseListener {
             }
         }
 
-        if (condicaoVerdadeira.peek()) {
+        if (expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
             comandos.add(new Comandos("Imprimir", ctx.valor()));
         }
     }
@@ -305,7 +296,7 @@ public class Semantico extends GramaticaBaseListener {
             variaveisParaLer.add(nome);
         }
 
-        if (!variaveisParaLer.isEmpty()) {
+        if (!variaveisParaLer.isEmpty() && expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
             comandos.add(new Comandos("Ler", variaveisParaLer));
         }
     }
@@ -313,24 +304,18 @@ public class Semantico extends GramaticaBaseListener {
 
     @Override
     public void enterBloco(GramaticaParser.BlocoContext ctx) {
-        /*if (!condicaoVerdadeira.peek()) {
-            return;
-        }*/
         variaveis.abrirEscopo();
 
-        if (condicaoVerdadeira.peek()) {
+        if (expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
             comandos.add(new Comandos("AbrirEscopo", null));
         }
     }
 
     @Override
     public void exitBloco(GramaticaParser.BlocoContext ctx) {
-        /*if (!condicaoVerdadeira.peek()) {
-            return;
-        }*/
         variaveis.fecharEscopo();
 
-        if (condicaoVerdadeira.peek()) {
+        if (expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
             comandos.add(new Comandos("FecharEscopo", null));
         }
     }
