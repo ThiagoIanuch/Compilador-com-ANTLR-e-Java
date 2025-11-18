@@ -3,12 +3,13 @@ grammar Gramatica;
 programa: depurar? bloco EOF;
 
 depurar: DEPURAR;
-bloco: (declaracao | atribuicao | condicao | imprimir)*;
+bloco: (declaracao | atribuicao | condicao | imprimir | ler)*;
 
 declaracao:           tipo_variavel variavel (',' variavel)* ';';
 atribuicao:           atribuicao_simples (',' atribuicao_simples)* ';';
 condicao:             SE '(' expressao_booleana ')' '{' bloco '}';
-imprimir:             ENTRADA ( '<<' valor )+ ';';
+imprimir:             IMPRIMIR ( SAIDA valor )+ ';';
+ler:                  LER (ENTRADA NOME)+ ';';
 
 tipo_variavel:        TIPO_INTEIRO | TIPO_DECIMAL | TIPO_TEXTO | TIPO_BOOLEANO;
 variavel:             NOME (ATRIBUICAO valor)?;
@@ -26,7 +27,8 @@ operador:             IGUAL | DIFERENTE | MAIOR | MENOR | MAIOR_IGUAL | MENOR_IG
 DEPURAR:          '--debug';
 
 SE:               'if';
-ENTRADA:          'cout';
+IMPRIMIR:         'cout';
+LER:              'cin';
 
 SOMA:             '+';
 SUBTRACAO:        '-';
@@ -39,6 +41,8 @@ MENOR_IGUAL:      '<=';
 MAIOR:            '>';
 MENOR:            '<';
 ATRIBUICAO:       '=';
+SAIDA:            '<<';
+ENTRADA:          '>>';
 
 TIPO_INTEIRO:     'int';
 TIPO_DECIMAL:     'float';
