@@ -101,6 +101,18 @@ public class GramaticaBaseListener implements GramaticaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterLer(GramaticaParser.LerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLer(GramaticaParser.LerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterTipo_variavel(GramaticaParser.Tipo_variavelContext ctx) { }
 	/**
 	 * {@inheritDoc}

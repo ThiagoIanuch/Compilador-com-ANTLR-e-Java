@@ -30,8 +30,12 @@ public class Main {
                 for (String erro : semantico.getErros()) {
                     System.out.println(RED + erro + RESET);
                 }
-            } else {
+                return;
+            }
+            else {
                 System.out.println("\nNenhum erro semântico encontrado.\n");
+                Interpretador interpretador = new Interpretador();
+                interpretador.executar(semantico.getComandos());
             }
 
             System.out.println(tree.toStringTree(parser));

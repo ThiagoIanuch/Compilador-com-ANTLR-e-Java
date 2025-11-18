@@ -53,6 +53,12 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitImprimir(GramaticaParser.ImprimirContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#ler}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLer(GramaticaParser.LerContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#tipo_variavel}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

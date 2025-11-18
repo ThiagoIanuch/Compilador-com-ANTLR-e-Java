@@ -125,6 +125,16 @@ public class Expressoes {
         return false;
     }
 
+    // Isso aqui serve para a conversão para INT ou FLOAT ter um comportamento parecido com C++, então
+    // se o FLOAT for igual a sua versão INT significa que o decimal é 0, com isso
+    // ele não irá mostrar as casas decimais pois irá converter para inteiro
+    public String converterFloatOuInt(float valor) {
+        if (valor == (int) valor) {
+            return Integer.toString((int) valor);
+        }
+        return Float.toString(valor);
+    }
+
     // Funções para as expressões booleanas do IF e ELSE
     public boolean compararValores(Object valorEsquerda, String operador, Object valorDireita) {
         switch (operador) {

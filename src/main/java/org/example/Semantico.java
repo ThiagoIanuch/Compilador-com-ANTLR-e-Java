@@ -6,29 +6,39 @@ import org.antlr.v4.runtime.tree.TerminalNode;
 import org.example.generated.GramaticaBaseListener;
 import org.example.generated.GramaticaParser;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Stack;
+import java.util.*;
 
 public class Semantico extends GramaticaBaseListener {
     private Variaveis variaveis = new Variaveis();
     private Expressoes expressoes = new Expressoes(variaveis);
-    private Stack<Boolean> condicaoVerdadeira = new Stack<>();
     private List<String> erros = new ArrayList<>();
+    private List<Comandos> comandos = new ArrayList<>();
+    private Stack<Boolean> condicaoVerdadeira = new Stack<>();
     private boolean ativarDepurar = false;
 
     public List<String> getErros() {
         return erros;
     }
 
+    public List<Comandos> getComandos() {
+        return comandos;
+    }
+
     public Semantico() {
         condicaoVerdadeira.push(true);
     }
 
+    // Em alguns casos se passar o ParserRuleContext ele vai obter a coluna incorreta
+    // Por isso em alguns casos é necessário o TerminalNode
+    // Precisa ser revisado
     public void adicionarErro(ParserRuleContext ctx, String mensagem) {
         int linha = ctx.start.getLine();
         int coluna = ctx.start.getCharPositionInLine();
+        erros.add("Erro na linha " + linha + ", coluna " + coluna + ": " + mensagem);
+    }
+    public void adicionarErro(TerminalNode token, String mensagem) {
+        int linha = token.getSymbol().getLine();
+        int coluna = token.getSymbol().getCharPositionInLine();
         erros.add("Erro na linha " + linha + ", coluna " + coluna + ": " + mensagem);
     }
 
@@ -39,9 +49,9 @@ public class Semantico extends GramaticaBaseListener {
 
     @Override
     public void enterDeclaracao(GramaticaParser.DeclaracaoContext ctx) {
-        if (!condicaoVerdadeira.peek()) {
+        /*if (!condicaoVerdadeira.peek()) {
             return;
-        }
+        }*/
 
         Tipo tipo = Tipo.valueOf(ctx.tipo_variavel().getText().toUpperCase());
 
@@ -54,7 +64,6 @@ public class Semantico extends GramaticaBaseListener {
             }
 
             if (variavel.valor() != null) {
-
                 if (variavel.valor().NOME() != null) {
                     if (!variaveis.variavelDeclarada(variavel.valor().NOME().getText())) {
                         adicionarErro(variavel, "a variável '" + variavel.valor().NOME().getText() + "' não foi declarada!");
@@ -76,6 +85,10 @@ public class Semantico extends GramaticaBaseListener {
                     if (Float.isNaN(resultado)) {
                         adicionarErro(variavel, "a variável '" + nome + "' foi atribuida com uma expressão inválida");
                         continue;
+                    }
+
+                    if (tipo == Tipo.INT && resultado % 1 != 0) {
+                        adicionarErro(variavel, "a variável '" + nome  + "' foi declarada com o valor incorreto!");
                     }
 
                     if (tipo == Tipo.INT) {
@@ -105,24 +118,27 @@ public class Semantico extends GramaticaBaseListener {
                     case STRING -> valor = "\"\"";
                 }
             }
-            
+
             if(!variaveis.valorValido(tipo, valor)) {
                 variaveis.adicionarVariavel(nome, new Variavel(tipo, nome, null));
                 adicionarErro(variavel, "a variável '" + nome  + "' foi declarada com o valor incorreto!");
                 continue;
             }
 
-
             Object valorConvertido = variaveis.converterValor(tipo, valor);
             variaveis.adicionarVariavel(nome, new Variavel(tipo, nome, valorConvertido));
+
+            if (condicaoVerdadeira.peek()) {
+                comandos.add(new Comandos("Declarar", variavel));;
+            }
         }
     }
 
     @Override
     public void enterAtribuicao(GramaticaParser.AtribuicaoContext ctx) {
-        if (!condicaoVerdadeira.peek()) {
+        /*if (!condicaoVerdadeira.peek()) {
             return;
-        }
+        }*/
 
         for (var simplesCtx : ctx.atribuicao_simples()) {
             String nome = simplesCtx.NOME().getText();
@@ -161,6 +177,10 @@ public class Semantico extends GramaticaBaseListener {
                     continue;
                 }
 
+                if (tipo == Tipo.INT && resultado % 1 != 0) {
+                    adicionarErro(simplesCtx, "a variável '" + nome  + "' foi declarada com o valor incorreto!");
+                }
+
                 if (tipo == Tipo.INT) {
                     valor = Integer.toString((int) resultado);
                 }
@@ -182,16 +202,15 @@ public class Semantico extends GramaticaBaseListener {
 
             Object valorConvertido = variaveis.converterValor(tipo, valor);
             variavelExistente.setValor(valorConvertido);
+
+            if (condicaoVerdadeira.peek()) {
+                comandos.add(new Comandos("Atribuir", simplesCtx));
+            }
         }
     }
 
     @Override
     public void enterCondicao(GramaticaParser.CondicaoContext ctx) {
-        if (!condicaoVerdadeira.peek()) {
-            condicaoVerdadeira.push(false);
-            return;
-        }
-
         ParseTree esquerda = ctx.expressao_booleana().children.get(0);
         String operador = ctx.expressao_booleana().operador().getText();
         ParseTree direita = ctx.expressao_booleana().children.get(2);
@@ -222,7 +241,13 @@ public class Semantico extends GramaticaBaseListener {
 
         boolean resultado = expressoes.compararValores(valorEsquerda, operador, valorDireita);
 
-        condicaoVerdadeira.push(resultado);
+        if (!condicaoVerdadeira.peek()) {
+            condicaoVerdadeira.push(false);
+            return;
+        }
+        else {
+            condicaoVerdadeira.push(resultado);
+        }
     }
 
     @Override
@@ -230,23 +255,18 @@ public class Semantico extends GramaticaBaseListener {
         condicaoVerdadeira.pop();
     }
 
-    // Ainda precisa ser revisado
     @Override
     public void enterImprimir(GramaticaParser.ImprimirContext ctx) {
-        if (!condicaoVerdadeira.peek()) return;
-
-        StringBuilder saida = new StringBuilder();
+        /*if (!condicaoVerdadeira.peek()) {
+            return;
+        }*/
 
         for (var valorCtx : ctx.valor()) {
-            String resultado = null;
-
             if (valorCtx.NOME() != null) {
                 if (!variaveis.variavelDeclarada(valorCtx.NOME().getText())) {
                     adicionarErro(valorCtx, "a variável '" + valorCtx.NOME().getText() + "' não foi declarada!");
                     continue;
                 }
-
-                resultado = variaveis.obterVariavel(valorCtx.NOME().getText()).getValor().toString();
             }
 
             if (valorCtx.expressao_aritmetica() != null) {
@@ -256,53 +276,63 @@ public class Semantico extends GramaticaBaseListener {
                     adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
                 }
 
-                float valorNumerico = expressoes.avaliarExpressaoAritmetica(valorCtx.expressao_aritmetica(), null);
+                float resultado = expressoes.avaliarExpressaoAritmetica(valorCtx.expressao_aritmetica(), null);
 
-                if (Float.isNaN(valorNumerico)) {
-                    adicionarErro(valorCtx, "a expressão informada é inválida");
+                if (Float.isNaN(resultado)) {
+                    adicionarErro(valorCtx, "a expressão informada é inválida!");
                     continue;
                 }
-
-                boolean expressaoFloat = expressoes.expressaoFloat(valorCtx.expressao_aritmetica());
-
-                // Isso aqui serve para a conversão para INT ou FLOAT ter um comportamento parecido com C++, então
-                // se a parte decimal do resultado for 0 ele irá converter para um inteiro
-                if (expressaoFloat && valorNumerico != (int) valorNumerico) {
-                    resultado = Float.toString(valorNumerico);
-                } else {
-                    resultado = Integer.toString((int) valorNumerico);
-                }
-            }
-
-            if (valorCtx.BOOLEANO() != null) {
-                resultado = valorCtx.BOOLEANO().getText();
-            }
-
-            if (valorCtx.TEXTO() != null) {
-                String texto = valorCtx.TEXTO().getText();
-                resultado = texto.substring(1, texto.length() - 1).replace("\\n", "\n");
-            }
-
-            if (resultado != null) {
-                saida.append(resultado);
             }
         }
 
-        System.out.print(saida.toString());
+        if (condicaoVerdadeira.peek()) {
+            comandos.add(new Comandos("Imprimir", ctx.valor()));
+        }
     }
 
     @Override
-    public void enterBloco(GramaticaParser.BlocoContext ctx) {
-        if (!condicaoVerdadeira.peek()) {
-            return;
+    public void enterLer(GramaticaParser.LerContext ctx) {
+        List<String> variaveisParaLer = new ArrayList<>();
+
+        for (TerminalNode token : ctx.NOME()) {
+            String nome = token.getText();
+
+            if (!variaveis.variavelDeclarada(nome)) {
+                adicionarErro(token, "a variável '" + nome + "' não foi declarada!");
+                continue;
+            }
+
+            variaveisParaLer.add(nome);
         }
 
+        if (!variaveisParaLer.isEmpty()) {
+            comandos.add(new Comandos("Ler", variaveisParaLer));
+        }
+    }
+
+
+    @Override
+    public void enterBloco(GramaticaParser.BlocoContext ctx) {
+        /*if (!condicaoVerdadeira.peek()) {
+            return;
+        }*/
         variaveis.abrirEscopo();
+
+        if (condicaoVerdadeira.peek()) {
+            comandos.add(new Comandos("AbrirEscopo", null));
+        }
     }
 
     @Override
     public void exitBloco(GramaticaParser.BlocoContext ctx) {
+        /*if (!condicaoVerdadeira.peek()) {
+            return;
+        }*/
         variaveis.fecharEscopo();
+
+        if (condicaoVerdadeira.peek()) {
+            comandos.add(new Comandos("FecharEscopo", null));
+        }
     }
 
     // Usado apenas quando o depurar é ativado com --debug no início do código
