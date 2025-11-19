@@ -21,7 +21,7 @@ expressao_aritmetica: termo ((SOMA | SUBTRACAO) termo)* ;
 termo:                fator ((MULTIPLICACAO  | DIVISAO) fator)*;
 fator:                NOME | INTEIRO | DECIMAL | '(' expressao_aritmetica ')';
 
-expressao_booleana:   (NOME | valor) operador (NOME | valor);
+expressao_booleana:   valor operador valor;
 operador:             IGUAL | DIFERENTE | MAIOR | MENOR | MAIOR_IGUAL | MENOR_IGUAL;
 
 DEPURAR:          '--debug';
