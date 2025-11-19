@@ -21,7 +21,6 @@ public class Variaveis {
     public void fecharEscopo() {
 
         if (escopos.size() > 1) {
-            //escopos.pop();
             LinkedHashMap<String, Variavel> escopoFechado = escopos.pop();
             escoposFechados.add(escopoFechado);
         }
@@ -107,21 +106,19 @@ public class Variaveis {
         }
     }
 
-    // Usado apenas para debugar, será removido
+    // Usado apenas para debugar
     public void listarVariaveis() {
         System.out.println("\nVariáveis declaradas por escopo:");
 
         int nivel = 0;
 
-        // Lista escopos já fechados
         for (int i = escoposFechados.size() - 1; i >= 0; i--) {
             LinkedHashMap<String, Variavel> escopo = escoposFechados.get(i);
-            System.out.println("Escopo nível " + nivel + " (fechado):");
+            System.out.println("Escopo nível " + nivel + ":");
             for (var entry : escopo.entrySet()) {
                 System.out.println("  " + entry.getValue());
             }
             nivel++;
         }
     }
-
 }

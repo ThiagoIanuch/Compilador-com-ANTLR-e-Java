@@ -11,8 +11,8 @@ public class Interpretador {
     private Expressoes expressoes = new Expressoes(variaveis);
     Scanner scanner = new Scanner(System.in);
 
-    public void executar(List<Comandos> comandos) {
-        for (Comandos comando : comandos) {
+    public void executar(List<Comando> comandos) {
+        for (Comando comando : comandos) {
             if (comando.tipo.equals("Declarar")) {
                 GramaticaParser.VariavelContext variavel = (GramaticaParser.VariavelContext) comando.valor;
 

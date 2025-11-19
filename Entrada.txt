@@ -1,10 +1,62 @@
-int MeuInt, MeuInt2 = -50;
-float MeuFloat = 1.10, MeuFloat2;
-bool MeuBoolean = true;
-string MinhaString = "Teste";
+--debug
+    int X = 15;
+    int Y = 25;
+    string S = "ok";
 
-if(1 > 10) {
-    if(MeuFloat < MeuInt2) {
+    // Primeiro IF simples
+    if (10 + 40 + 90 == 290 + 100) {
+        cout << "Primeiro IF verdadeiro\n";
 
+        int A = 50;
+        cout << "Valor de A: " << A << "\n";
+
+        // Segundo IF dentro do primeiro
+        if (X * 2 == Y + 5) {
+            cout << "Segundo IF verdadeiro\n";
+
+            int B = A + X + Y;
+            cout << "Valor de B: " << B << "\n";
+
+            // Terceiro IF dentro do segundo
+            if ("ok" != S) {
+                cout << "Terceiro IF verdadeiro\n";
+            }
+            else {
+                cout << "Terceiro IF falso!\n";
+            }
+        }
+        else {
+            cout << "Segundo IF falso\n";
+
+            int C = A - X;
+            cout << "Valor de C: " << C << "\n";
+
+            // Outro IF dentro desse ELSE
+            if ((C * 5) - 10 == 100) {
+                cout << "IF dentro do ELSE verdadeiro\n";
+            }
+            else {
+                cout << "IF dentro do ELSE falso\n";
+            }
+        }
+
+        cout << "Depois dos IF internos\n";
     }
-}
+    else {
+        cout << "Primeiro IF falso\n";
+    }
+
+    // Outro IF fora do bloco anterior
+    if (50 == 50) {
+        cout << "IF externo verdadeiro\n";
+        int Z = 999;
+
+        if (Z > 100) {
+            cout << "Z eh maior que 100\n";
+        }
+        else {
+            cout << "Z nao eh maior que 100\n";
+        }
+    }
+
+    cout << "Fim do programa\n";

@@ -1,7 +1,6 @@
 package org.example;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.example.generated.GramaticaBaseListener;
 import org.example.generated.GramaticaParser;
@@ -12,8 +11,8 @@ public class Semantico extends GramaticaBaseListener {
     private Variaveis variaveis = new Variaveis();
     private Expressoes expressoes = new Expressoes(variaveis);
     private List<String> erros = new ArrayList<>();
-    private List<Comandos> comandos = new ArrayList<>();
-    private Stack<Boolean> condicaoVerdadeira = new Stack<>();
+    private List<Comando> comandos = new ArrayList<>();
+    private Stack<Boolean> deveExecutarSe = new Stack<>();
     private Stack<Boolean> deveExecutarSenao = new Stack<>();
     private boolean ativarDepurar = false;
 
@@ -21,12 +20,12 @@ public class Semantico extends GramaticaBaseListener {
         return erros;
     }
 
-    public List<Comandos> getComandos() {
+    public List<Comando> getComandos() {
         return comandos;
     }
 
     public Semantico() {
-        condicaoVerdadeira.push(true);
+        deveExecutarSe.push(true);
     }
 
     // Em alguns casos se passar o ParserRuleContext ele vai obter a coluna incorreta
@@ -125,8 +124,8 @@ public class Semantico extends GramaticaBaseListener {
             Object valorConvertido = variaveis.converterValor(tipo, valor);
             variaveis.adicionarVariavel(nome, new Variavel(tipo, nome, valorConvertido));
 
-            if (expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
-                comandos.add(new Comandos("Declarar", variavel));;
+            if (expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
+                comandos.add(new Comando("Declarar", variavel));;
             }
         }
     }
@@ -196,57 +195,117 @@ public class Semantico extends GramaticaBaseListener {
             Object valorConvertido = variaveis.converterValor(tipo, valor);
             variavelExistente.setValor(valorConvertido);
 
-            if (expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
-                comandos.add(new Comandos("Atribuir", simplesCtx));
+            if (expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
+                comandos.add(new Comando("Atribuir", simplesCtx));
             }
         }
     }
 
     @Override
     public void enterCondicao(GramaticaParser.CondicaoContext ctx) {
-        ParseTree esquerda = ctx.expressao_booleana().children.get(0);
+        GramaticaParser.ValorContext esquerda = ctx.expressao_booleana().valor(0);
         String operador = ctx.expressao_booleana().operador().getText();
-        ParseTree direita = ctx.expressao_booleana().children.get(2);
+        GramaticaParser.ValorContext direita = ctx.expressao_booleana().valor(1);
         Object valorEsquerda = null;
         Object valorDireita = null;
 
-        // Primeiro verifica se o valor da esquerda e direita veio de 'NOME' ou de 'valor', se veio de 'NOME' quer dizer que é uma variável, se não é um valor.
-        // Se for uma variável então verifica se a variável existe ou não e obtem o seu valor, se não for apenas passa o valor digitado.
-        if (esquerda instanceof TerminalNode && ((TerminalNode) esquerda).getSymbol().getType() == GramaticaParser.NOME) {
-            if(!variaveis.variavelDeclarada(esquerda.getText())) {
-                throw new RuntimeException("Erro: a variavel " + esquerda.getText() + " não foi declarada anteriormente!");
+        boolean resultado = true;
+
+        if (esquerda.NOME() != null) {
+            if (!variaveis.variavelDeclarada(esquerda.NOME().toString())) {
+                adicionarErro(ctx, "a variável '" + esquerda.getText() + "' não foi declarada!");
+                resultado = false;
             }
-            valorEsquerda = variaveis.obterVariavel(esquerda.getText()).getValor();
+            else {
+                valorEsquerda = variaveis.obterVariavel(esquerda.NOME().toString()).getValor();
+            }
+        }
+        else if (esquerda.expressao_aritmetica() != null) {
+            var invalidas = expressoes.verificarVariaveisEmExpressao(esquerda.expressao_aritmetica(), null);
+
+            for (var fator : invalidas) {
+                adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
+            }
+
+            float valor = expressoes.avaliarExpressaoAritmetica(esquerda.expressao_aritmetica(), null);
+
+            if (Float.isNaN(valor)) {
+                adicionarErro(ctx, "a expressão informada é inválida!");
+            }
+            else {
+                valorEsquerda = expressoes.converterFloatOuInt(valor);
+            }
+        }
+        else if (esquerda.BOOLEANO() != null) {
+            valorEsquerda = esquerda.BOOLEANO().getText();
+        }
+        else if (esquerda.TEXTO() != null) {
+            valorEsquerda = esquerda.TEXTO().getText();
         }
         else {
-            valorEsquerda = expressoes.converterValor(esquerda.getText());
+            resultado = false;
         }
 
-        if (direita instanceof TerminalNode && ((TerminalNode) direita).getSymbol().getType() == GramaticaParser.NOME) {
-            if(!variaveis.variavelDeclarada(direita.getText())) {
-                throw new RuntimeException("Erro: a variavel " + direita.getText() + " não foi declarada anteriormente!");
+        if (direita.NOME() != null) {
+            if (!variaveis.variavelDeclarada(direita.NOME().toString())) {
+                adicionarErro(ctx, "a variável '" + direita.getText() + "' não foi declarada!");
+                resultado = false;
             }
-            valorDireita = variaveis.obterVariavel(direita.getText()).getValor();
+            else {
+                valorDireita = variaveis.obterVariavel(direita.NOME().toString()).getValor();
+            }
+        }
+        else if (direita.expressao_aritmetica() != null) {
+            var invalidas = expressoes.verificarVariaveisEmExpressao(direita.expressao_aritmetica(), null);
+
+            for (var fator : invalidas) {
+                adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
+            }
+
+            float valor = expressoes.avaliarExpressaoAritmetica(direita.expressao_aritmetica(), null);
+
+            if (Float.isNaN(valor)) {
+                adicionarErro(ctx, "a expressão informada é inválida!");
+            }
+            else {
+                valorDireita = expressoes.converterFloatOuInt(valor);
+            }
+        }
+        else if (direita.BOOLEANO() != null) {
+            valorDireita = direita.BOOLEANO().getText();
+        }
+        else if (direita.TEXTO() != null) {
+            valorDireita = direita.TEXTO().getText();
         }
         else {
-            valorDireita = expressoes.converterValor(direita.getText());
+            resultado = false;
         }
 
-        boolean resultado = expressoes.compararValores(valorEsquerda, operador, valorDireita);
+        if(resultado) {
+            valorEsquerda = expressoes.converterValor(valorEsquerda.toString());
+            valorDireita = expressoes.converterValor(valorDireita.toString());
 
-        if(!expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
-            condicaoVerdadeira.push(false);
+            if(!expressoes.comparacaoValida(valorEsquerda, operador, valorDireita)) {
+                adicionarErro(ctx, "a condição está com uma comparação inválida");
+            }
+            else {
+                resultado = expressoes.compararValores(valorEsquerda, operador, valorDireita);
+            }
+        }
+
+        if(!expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
+            deveExecutarSe.push(false);
             deveExecutarSenao.push(false);
             return;
         }
 
-        condicaoVerdadeira.push(resultado);
+        deveExecutarSe.push(resultado);
         deveExecutarSenao.push(!resultado);
     }
 
     @Override
     public void exitCondicao(GramaticaParser.CondicaoContext ctx) {
-        condicaoVerdadeira.pop();
+        deveExecutarSe.pop();
         deveExecutarSenao.pop();
     }
 
@@ -276,8 +335,8 @@ public class Semantico extends GramaticaBaseListener {
             }
         }
 
-        if (expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
-            comandos.add(new Comandos("Imprimir", ctx.valor()));
+        if (expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
+            comandos.add(new Comando("Imprimir", ctx.valor()));
         }
     }
 
@@ -296,18 +355,17 @@ public class Semantico extends GramaticaBaseListener {
             variaveisParaLer.add(nome);
         }
 
-        if (!variaveisParaLer.isEmpty() && expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
-            comandos.add(new Comandos("Ler", variaveisParaLer));
+        if (!variaveisParaLer.isEmpty() && expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
+            comandos.add(new Comando("Ler", variaveisParaLer));
         }
     }
-
 
     @Override
     public void enterBloco(GramaticaParser.BlocoContext ctx) {
         variaveis.abrirEscopo();
 
-        if (expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
-            comandos.add(new Comandos("AbrirEscopo", null));
+        if (expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
+            comandos.add(new Comando("AbrirEscopo", null));
         }
     }
 
@@ -315,8 +373,8 @@ public class Semantico extends GramaticaBaseListener {
     public void exitBloco(GramaticaParser.BlocoContext ctx) {
         variaveis.fecharEscopo();
 
-        if (expressoes.podeExecutar(ctx, condicaoVerdadeira, deveExecutarSenao)) {
-            comandos.add(new Comandos("FecharEscopo", null));
+        if (expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
+            comandos.add(new Comando("FecharEscopo", null));
         }
     }
 

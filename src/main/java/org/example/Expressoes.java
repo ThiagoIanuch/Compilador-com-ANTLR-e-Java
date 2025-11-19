@@ -111,6 +111,7 @@ public class Expressoes {
         return invalidas;
     }
 
+    // Provavelmente será removido mais tarde, já que não está mais sendo utilizado (verificar)
     public boolean expressaoFloat(GramaticaParser.Expressao_aritmeticaContext ctx) {
         for (var ctxExpressao : ctx.children) {
             String valor = ctxExpressao.getText();
@@ -138,6 +139,22 @@ public class Expressoes {
     }
 
     // Funções para as expressões booleanas do IF e ELSE
+    public boolean comparacaoValida(Object valorEsquerda, String operador, Object valorDireita) {
+        if (valorEsquerda instanceof Number && valorDireita instanceof Number) {
+            return true;
+        }
+
+        if (valorEsquerda instanceof String && valorDireita instanceof String) {
+            return operador.equals("==") || operador.equals("!=");
+        }
+
+        if (valorEsquerda instanceof Boolean && valorDireita instanceof Boolean) {
+            return operador.equals("==") || operador.equals("!=");
+        }
+
+        return false;
+    }
+
     public boolean compararValores(Object valorEsquerda, String operador, Object valorDireita) {
         switch (operador) {
             case "==":
@@ -176,7 +193,7 @@ public class Expressoes {
 
     // Essa parte é necessária para verificar se está dentro do IF ou do ELSE e assim decidir se o que está lá dentro
     // deve ser executado ou não
-    public boolean podeExecutar(ParseTree ctx, Stack<Boolean> condicaoVerdadeira, Stack<Boolean> deveExecutarSenao) {
+    public boolean podeExecutar(ParseTree ctx, Stack<Boolean> deveExecutarSe, Stack<Boolean> deveExecutarSenao) {
         ParseTree atual = ctx;
         GramaticaParser.BlocoContext blocoAtual = null;
         GramaticaParser.CondicaoContext condicaoPai = null;
@@ -198,7 +215,7 @@ public class Expressoes {
         }
 
         if (condicaoPai.bloco(0) == blocoAtual) {
-            return !condicaoVerdadeira.isEmpty() && condicaoVerdadeira.peek();
+            return !deveExecutarSe.isEmpty() && deveExecutarSe.peek();
         }
         else if (condicaoPai.bloco().size() > 1 && condicaoPai.bloco(1) == blocoAtual) {
             return !deveExecutarSenao.isEmpty() && deveExecutarSenao.peek();
