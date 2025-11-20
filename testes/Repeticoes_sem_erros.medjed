@@ -1,0 +1,14 @@
+// Testes de repetições sem erros
+--debug
+
+BeginPlay()
+{
+    int X = 1;
+
+    while(X <= 10)
+    {
+        cout << X + 1 << "\n";
+
+        X = X + 1;
+    }
+}

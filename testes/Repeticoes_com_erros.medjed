@@ -1,0 +1,14 @@
+// Testes de repetições com erros
+--debug
+
+BeginPlay()
+{
+    int X = 1;
+
+    while(Z <= 10) // Erro pois a variável Z não foi declarada
+    {
+        cout << X + 1 << "\n";
+
+        X = X + 1;
+    }
+}
