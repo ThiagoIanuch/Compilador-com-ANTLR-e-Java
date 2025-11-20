@@ -14,19 +14,20 @@ BeginPlay()
     cout << "\n" << MinhaString;
     cout << "\nE esse um exemplo de booleano: " << VariavelBool;
 
-    cout << "\n\nDigite um valor inteiro: ";
-    cin >> X;
-
+    X = 10;
     if(X > 50)
     {
-        cout << "O valor digitado '" << X << "' é maior que 50";
+        cout << "\n\nO valor de X agora é '" << X << "', que é maior que 50";
     }
     else
     {
-        cout << "O valor digitado '" << X << "' é menor que 50";
+        cout << "\n\nO valor de X agora é '" << X << "', que é menor que 50";
     }
 
-    cout << "\n\n50 + 90 * 40 / 2 =  " << 50 + 90 * 40 / 2; // O resultado deve ser 1850
+    cout << "\n\nDigite um valor inteiro: ";
+    cin >> X;
+
+    cout << "\n50 + 90 * 40 / 2 =  " << 50 + 90 * 40 / 2; // O resultado deve ser 1850
     cout << "\n(50 + 90) * 40 / 2 = " << (50 + 90) * 40 / 2; // O resultado deve ser 2800
     cout << "\n(50 + (90 * 40)) / 2 = " << (50 + (90 * 40)) / 2; // O resultado deve ser 1825
 }
