@@ -1,0 +1,19 @@
+// Testes de impressão e leitura com erro.
+--debug
+
+BeginPlay()
+{
+    int X = 0;
+    int Y = 0;
+
+    cout << Teste; // Impressão inválida, falta aspas na palavra Teste, por tanto irá pensar que é uma variável, porém ela não foi declarada
+
+    cout << "Digite um valor inteiro para a variável X: ";
+    cin >> X >> Z; // Não possui a variável Z declarada
+
+    cout << "Digite um valor inteiro para a variável Y: ";
+    cin >> Y;
+
+    cout << "O valor de X + Y é: " << X + Y;
+    cout << "\nO valor de X - Y é: " << X - Y;
+}

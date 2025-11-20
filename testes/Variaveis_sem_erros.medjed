@@ -1,0 +1,20 @@
+// Testes de declaração e atribuição de variáveis sem erro.
+// Variáveis que não foram inicializadas vão apresentar valores inesperados
+--debug
+
+BeginPlay()
+{
+    int A = 10, B = 20, C;
+    float D, E, F = 40.0;
+    string variavelTexto = "Isso é uma string", texto = "Outro exemplo de string";
+    bool booleanoVerdadeiro = true, booleanoFalse = false;
+
+    A = 30, B = 50, C = 20;
+
+    variavelTexto = "Alteração no texto";
+
+    if(A > B)
+    {
+        int XYZ = 500;
+    }
+}

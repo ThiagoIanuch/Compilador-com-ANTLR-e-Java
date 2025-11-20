@@ -1,0 +1,17 @@
+// Testes de impressão e leitura sem erro.
+--debug
+
+BeginPlay()
+{
+    int X = 0;
+    int Y = 0;
+
+    cout << "Digite um valor inteiro para a variável X: ";
+    cin >> X;
+
+    cout << "Digite um valor inteiro para a variável Y: ";
+    cin >> Y;
+
+    cout << "O valor de X + Y é: " << X + Y;
+    cout << "\nO valor de X - Y é: " << X - Y;
+}

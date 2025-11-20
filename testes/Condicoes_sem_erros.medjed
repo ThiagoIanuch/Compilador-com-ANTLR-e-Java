@@ -1,0 +1,30 @@
+// Testes de condições sem erro.
+--debug
+
+BeginPlay()
+{
+    int X = 10, Y = 20;
+    string texto1 = "Texto 1", texto2 = "Texto 2";
+
+    if(X > 10)
+    {
+        cout << "A variável X com valor " << X << "' é maior a variável Y com valor '" << Y << "'";
+    }
+    else
+    {
+        cout << "A variável X com valor '" << X << "' é menor ou igual a variável Y com valor '" << Y << "'";
+
+        if(X > 5) {
+            cout << "\nPorém X é maior que 5";
+        }
+    }
+
+    if(texto1 == texto2)
+    {
+        cout << "\nAs variáveis texto1 e texto2 são iguais";
+    }
+    else
+    {
+        cout << "\nAs variáveis texto1 e texto2 não são iguais";
+    }
+}

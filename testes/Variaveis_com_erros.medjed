@@ -1,0 +1,24 @@
+// Testes de declaração e atribuição de variáveis com erro.
+--debug
+
+BeginPlay()
+{
+    int A = 10, B = 20, C;
+    int A = 20; // Variável A já foi declarada anteriormente;
+    float D, E = "teste", F = 40.0; // Valor incorreto para a variável E
+    string variavelTexto = "Isso é uma string", texto = 50; // Valor incorreto para a variável 'texto'
+    bool booleanoVerdadeiro = true, booleanoFalse = false;
+
+    A = 30, B = 50.5, C = 20; // Valor incorreto para a variável B
+
+    Z = 60; // Variável Z não foi declarada;
+
+    variavelTexto = "Alteração no texto";
+
+    if(A > B)
+    {
+        int XYZ = 500;
+        int A = 60; // Isso é permitido, pois a variável A ainda não foi declarada neste escopo
+        int A = 80 // Isso dará erro, a variável A já foi declarada aqui
+    }
+}
