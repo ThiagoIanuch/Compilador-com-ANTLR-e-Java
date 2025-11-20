@@ -1,6 +1,6 @@
 grammar Gramatica;
 
-programa:             depurar? 'BeginPlay() {' bloco '}' EOF;
+programa:             depurar? 'BeginPlay()' '{' bloco '}' EOF;
 
 depurar:              DEPURAR;
 bloco:                (declaracao | atribuicao | condicao | repeticao_enquanto |imprimir | ler)*;
