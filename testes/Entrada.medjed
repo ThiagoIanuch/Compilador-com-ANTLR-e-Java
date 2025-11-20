@@ -1,9 +1,5 @@
-// Esse é um código entrada de exemplo básico que é compilado normalmente
-// A pasta testes/ contém outros arquivos de testes (incluindo arquivos que não são compilados e geram erros)
-
-//--debug // Ativar o modo debug mostrará todas as variáveis declaradas em cada escopo e os comandos que foram executados
-
-BeginPlay() {
+BeginPlay()
+{
     int X, VariavelInt, A;
     int Y = 50;
     float Z = 50.0, VariavelFloat;
@@ -11,7 +7,7 @@ BeginPlay() {
     bool VariavelBool = true;
 
     VariavelInt = 50, A = 20;
-    cout << VariavelInt - A;
+    cout << VariavelInt << " - " << A << " = " << VariavelInt - A;
 
     cout << "\n\nO valor de: X + Y é: " << X + Y << "\n"; // Isso irá gerar um valor inesperado, pois a variável X não foi inicializada
     cout << "O valor de Y + Z é: " << Y + Z << "\n"; // Isso irá mostrar o valor '100' e não '100.0', pois como as casas decimais do resultado são '0' ele irá converter para INTEIRO
@@ -21,20 +17,16 @@ BeginPlay() {
     cout << "\n\nDigite um valor inteiro: ";
     cin >> X;
 
-    if(X > 50) {
+    if(X > 50)
+    {
         cout << "O valor digitado '" << X << "' é maior que 50";
     }
-    else {
+    else
+    {
         cout << "O valor digitado '" << X << "' é menor que 50";
     }
 
     cout << "\n\n50 + 90 * 40 / 2 =  " << 50 + 90 * 40 / 2; // O resultado deve ser 1850
-    cout << "\n(50 + 90) * 40 / 2: " << (50 + 90) * 40 / 2; // O resultado deve ser 2800
-
-    // While e For são permitidos e a semântica é verificada, porém as repetições NÃO SÃO INTERPRETADAS e ocorrem somente 1 vez
-    X = 1;
-    while(X < 10) {
-        cout << "\n\nTeste";
-        X = X + 1;
-    }
+    cout << "\n(50 + 90) * 40 / 2 = " << (50 + 90) * 40 / 2; // O resultado deve ser 2800
+    cout << "\n(50 + (90 * 40)) / 2 = " << (50 + (90 * 40)) / 2; // O resultado deve ser 1825
 }
