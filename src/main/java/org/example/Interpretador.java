@@ -150,7 +150,7 @@ public class Interpretador {
                         throw new IllegalArgumentException("\nO programa foi encerrado pois o valor digitado é inválido para a váriavel '" + nome + "' de tipo (" + variavel.getTipo() + ")!");
                     }
 
-                    variavel.setValor(entrada);
+                    variavel.setValor(variaveis.converterValor(variavel.getTipo(), entrada));
                 }
             }
             else if(comando.tipo.equals("AbrirEscopo")) {
