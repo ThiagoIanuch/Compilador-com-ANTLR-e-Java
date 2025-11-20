@@ -47,6 +47,12 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCondicao(GramaticaParser.CondicaoContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#repeticao_enquanto}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#imprimir}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

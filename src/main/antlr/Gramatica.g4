@@ -1,13 +1,14 @@
 grammar Gramatica;
 
-programa:             depurar? bloco EOF;
+programa:             depurar? 'BeginPlay() {' bloco '}' EOF;
 
 depurar:              DEPURAR;
-bloco:                (declaracao | atribuicao | condicao | imprimir | ler)*;
+bloco:                (declaracao | atribuicao | condicao | repeticao_enquanto |imprimir | ler)*;
 
 declaracao:           tipo_variavel variavel (',' variavel)* ';';
 atribuicao:           atribuicao_simples (',' atribuicao_simples)* ';';
 condicao:             SE '(' expressao_booleana ')' '{' bloco '}' (SENAO '{' bloco '}')?;
+repeticao_enquanto:   ENQUANTO '(' expressao_booleana ')' '{' bloco '}';
 imprimir:             IMPRIMIR ( SAIDA valor )+ ';';
 ler:                  LER (ENTRADA NOME)+ ';';
 
@@ -28,10 +29,10 @@ DEPURAR:          '--debug';
 
 SE:               'if';
 SENAO:            'else';
+PARA:             'for';
+ENQUANTO:         'while';
 IMPRIMIR:         'cout';
 LER:              'cin';
-ENQUANTO:         'while';
-PARA:             'for';
 
 SOMA:             '+';
 SUBTRACAO:        '-';
@@ -61,7 +62,3 @@ NOME:             [a-zA-Z][a-zA-Z0-9]*;
 ESPACO:           [ \t\r\n]+ -> skip;
 COMENTARIO_LINHA: '//' ~[\r\n]* -> skip;
 COMENTARIO_BLOCO: '/*' .*? '*/' -> skip;
-
-// AINDA PRECISA SER IMPLEMENTANDO
-//repeticao_para: PARA ABRE_PARENTESES FECHA_PARENTESES ABRE_CHAVES FECHA_CHAVES;
-//repeticao_enquanto: ENQUANTO ABRE_PARENTESES FECHA_PARENTESES ABRE_CHAVES FECHA_CHAVES;

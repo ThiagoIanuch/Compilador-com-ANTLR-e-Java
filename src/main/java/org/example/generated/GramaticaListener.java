@@ -68,6 +68,16 @@ public interface GramaticaListener extends ParseTreeListener {
 	 */
 	void exitCondicao(GramaticaParser.CondicaoContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link GramaticaParser#repeticao_enquanto}.
+	 * @param ctx the parse tree
+	 */
+	void enterRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramaticaParser#repeticao_enquanto}.
+	 * @param ctx the parse tree
+	 */
+	void exitRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link GramaticaParser#imprimir}.
 	 * @param ctx the parse tree
 	 */

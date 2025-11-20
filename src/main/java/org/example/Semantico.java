@@ -83,8 +83,10 @@ public class Semantico extends GramaticaBaseListener {
                         continue;
                     }
 
-                    if (tipo == Tipo.INT && resultado % 1 != 0) {
+                    String valorOriginal = variavel.valor().expressao_aritmetica().getText();
+                    if (tipo == Tipo.INT && valorOriginal.contains(".")) {
                         adicionarErro(variavel, "a variável '" + nome  + "' foi declarada com o valor incorreto!");
+                        continue;
                     }
 
                     if (tipo == Tipo.INT) {
@@ -109,7 +111,7 @@ public class Semantico extends GramaticaBaseListener {
 
                 switch (tipo) {
                     case INT -> valor = Integer.toString(random.nextInt(30000));
-                    case FLOAT -> Float.toString(random.nextFloat() * 30000);
+                    case FLOAT -> valor = Float.toString(random.nextFloat() * 30000);
                     case BOOL -> valor = "false";
                     case STRING -> valor = "\"\"";
                 }
@@ -169,8 +171,10 @@ public class Semantico extends GramaticaBaseListener {
                     continue;
                 }
 
-                if (tipo == Tipo.INT && resultado % 1 != 0) {
+                String valorOriginal = simplesCtx.valor().expressao_aritmetica().getText();
+                if (tipo == Tipo.INT && valorOriginal.contains(".")) {
                     adicionarErro(simplesCtx, "a variável '" + nome  + "' foi declarada com o valor incorreto!");
+                    continue;
                 }
 
                 if (tipo == Tipo.INT) {
@@ -186,7 +190,7 @@ public class Semantico extends GramaticaBaseListener {
             if (valorCtx.TEXTO() != null) {
                 valor = valorCtx.TEXTO().getText();
             }
-            
+
             if (!variaveis.valorValido(tipo, valor)) {
                 adicionarErro(simplesCtx, "a variável '" + nome + "' foi atribuída com um valor incompatível!");
                 continue;
@@ -310,6 +314,105 @@ public class Semantico extends GramaticaBaseListener {
     }
 
     @Override
+    public void enterRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx) {
+        GramaticaParser.ValorContext esquerda = ctx.expressao_booleana().valor(0);
+        String operador = ctx.expressao_booleana().operador().getText();
+        GramaticaParser.ValorContext direita = ctx.expressao_booleana().valor(1);
+        Object valorEsquerda = null;
+        Object valorDireita = null;
+
+        boolean resultado = true;
+
+        if (esquerda.NOME() != null) {
+            if (!variaveis.variavelDeclarada(esquerda.NOME().toString())) {
+                adicionarErro(ctx, "a variável '" + esquerda.getText() + "' não foi declarada!");
+                resultado = false;
+            }
+            else {
+                valorEsquerda = variaveis.obterVariavel(esquerda.NOME().toString()).getValor();
+            }
+        }
+        else if (esquerda.expressao_aritmetica() != null) {
+            var invalidas = expressoes.verificarVariaveisEmExpressao(esquerda.expressao_aritmetica(), null);
+
+            for (var fator : invalidas) {
+                adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
+            }
+
+            float valor = expressoes.avaliarExpressaoAritmetica(esquerda.expressao_aritmetica(), null);
+
+            if (Float.isNaN(valor)) {
+                adicionarErro(ctx, "a expressão informada é inválida!");
+            }
+            else {
+                valorEsquerda = expressoes.converterFloatOuInt(valor);
+            }
+        }
+        else if (esquerda.BOOLEANO() != null) {
+            valorEsquerda = esquerda.BOOLEANO().getText();
+        }
+        else if (esquerda.TEXTO() != null) {
+            valorEsquerda = esquerda.TEXTO().getText();
+        }
+        else {
+            resultado = false;
+        }
+
+        if (direita.NOME() != null) {
+            if (!variaveis.variavelDeclarada(direita.NOME().toString())) {
+                adicionarErro(ctx, "a variável '" + direita.getText() + "' não foi declarada!");
+                resultado = false;
+            }
+            else {
+                valorDireita = variaveis.obterVariavel(direita.NOME().toString()).getValor();
+            }
+        }
+        else if (direita.expressao_aritmetica() != null) {
+            var invalidas = expressoes.verificarVariaveisEmExpressao(direita.expressao_aritmetica(), null);
+
+            for (var fator : invalidas) {
+                adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
+            }
+
+            float valor = expressoes.avaliarExpressaoAritmetica(direita.expressao_aritmetica(), null);
+
+            if (Float.isNaN(valor)) {
+                adicionarErro(ctx, "a expressão informada é inválida!");
+            }
+            else {
+                valorDireita = expressoes.converterFloatOuInt(valor);
+            }
+        }
+        else if (direita.BOOLEANO() != null) {
+            valorDireita = direita.BOOLEANO().getText();
+        }
+        else if (direita.TEXTO() != null) {
+            valorDireita = direita.TEXTO().getText();
+        }
+        else {
+            resultado = false;
+        }
+
+        if(resultado) {
+            valorEsquerda = expressoes.converterValor(valorEsquerda.toString());
+            valorDireita = expressoes.converterValor(valorDireita.toString());
+
+            if(!expressoes.comparacaoValida(valorEsquerda, operador, valorDireita)) {
+                adicionarErro(ctx, "a condição está com uma comparação inválida");
+            }
+            else {
+                resultado = expressoes.compararValores(valorEsquerda, operador, valorDireita);
+            }
+        }
+
+        if(!expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
+            deveExecutarSe.push(false);
+            deveExecutarSenao.push(false);
+            return;
+        }
+    }
+
+    @Override
     public void enterImprimir(GramaticaParser.ImprimirContext ctx) {
         for (var valorCtx : ctx.valor()) {
             if (valorCtx.NOME() != null) {
@@ -383,6 +486,11 @@ public class Semantico extends GramaticaBaseListener {
     public void exitPrograma(GramaticaParser.ProgramaContext ctx) {
         if(ativarDepurar) {
             variaveis.listarVariaveis();
+
+            System.out.println("\nLista de comandos:");
+            for (int i = 0; i < comandos.size(); i++) {
+                System.out.println("Tipo: " + comandos.get(i).tipo + ", Valor: " + comandos.get(i).valor);
+            }
         }
     }
 }

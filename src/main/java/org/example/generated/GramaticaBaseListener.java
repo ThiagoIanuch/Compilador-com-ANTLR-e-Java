@@ -89,6 +89,18 @@ public class GramaticaBaseListener implements GramaticaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterImprimir(GramaticaParser.ImprimirContext ctx) { }
 	/**
 	 * {@inheritDoc}

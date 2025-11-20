@@ -50,7 +50,7 @@ public class Interpretador {
 
                     switch (tipo) {
                         case INT -> valor = Integer.toString(random.nextInt(30000));
-                        case FLOAT -> Float.toString(random.nextFloat() * 30000);
+                        case FLOAT -> valor = Float.toString(random.nextFloat() * 30000);
                         case BOOL -> valor = "false";
                         case STRING -> valor = "\"\"";
                     }
@@ -145,6 +145,11 @@ public class Interpretador {
                 for (String nome : listaVariaveis) {
                     String entrada = scanner.nextLine();
                     Variavel variavel = variaveis.obterVariavel(nome);
+
+                    if(!variaveis.valorValido(variavel.getTipo(), entrada)) {
+                        throw new IllegalArgumentException("\nO programa foi encerrado pois o valor digitado é inválido para a váriavel '" + nome + "' de tipo (" + variavel.getTipo() + ")!");
+                    }
+
                     variavel.setValor(entrada);
                 }
             }

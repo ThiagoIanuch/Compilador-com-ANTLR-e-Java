@@ -15,7 +15,22 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            CharStream entrada = CharStreams.fromFileName("Entrada.txt");
+            String arquivoEntrada;
+
+            if (args.length > 0) {
+                arquivoEntrada = args[0];
+                System.out.println(VERDE + "Usando arquivo: " + arquivoEntrada + REINICIAR);
+            } else {
+                arquivoEntrada = "testes/Entrada.medjed";
+                System.out.println(VERDE + "Usando arquivo padrão: " + arquivoEntrada + REINICIAR);
+            }
+
+            if(!arquivoEntrada.endsWith(".medjed")) {
+                System.out.println(VERMELHO + "Erro: o arquivo precisa ter extensão .medjed" + REINICIAR);
+                return;
+            }
+
+            CharStream entrada = CharStreams.fromFileName(arquivoEntrada);
 
             GramaticaLexer lexico = new GramaticaLexer(entrada);
             lexico.removeErrorListeners();
@@ -67,10 +82,10 @@ public class Main {
             Interpretador interpretador = new Interpretador();
             interpretador.executar(analisadorSemantico.getComandos());
 
-            System.out.println(arvore.toStringTree(sintatico));
+            System.out.println("\n\n" + arvore.toStringTree(sintatico));
         }
         catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.out.println(VERMELHO + e.getMessage() + REINICIAR);
         }
     }
 }
