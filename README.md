@@ -6,7 +6,17 @@ Projeto desenvolvido utilizando **ANTLR** e **Java** para criação de um **comp
 
 ## 📌 1. Requisitos e como executar o projeto
 
-Em construção
+1) Baixe a versão 1.0 do projeto:
+[Compilador com ANTLR e Java - Release 1.0](https://github.com/ThiagoIanuch/Compilador-com-ANTLR-e-Java/releases/tag/1.0)
+
+2) Descompacte a pasta baixada, que conterá:
+
+- `Compilador-com-ANTLR-e-Java.jar` → arquivo executável do projeto  
+- `testes/` → pasta com os códigos de teste, que devem possuir a extensão `.medjed`. Os arquivos podem ser editados ou criados facilmente em qualquer editor de texto.
+
+3) Abra o terminal na pasta descompactada e execute:
+
+- `java -jar Compilador-com-ANTLR-e-Java.jar testes/nome-do-arquivo-que-ira-compilar.medjed`
 
 ---
 
@@ -32,7 +42,7 @@ A linguagem é case-sensitive e segue sintaxe semelhante ao do C++. Os arquivos 
 
 ## 📌 3. Exemplo básico de código 
 
-Para um melhor entendimento da linguagem, leia a [Documentação completa](https://github.com/ThiagoIanuch/Compilador-com-ANTLR-e-Java/blob/main/Documenta%C3%A7%C3%A3o%20completa.pdf).
+Para um melhor entendimento da linguagem, leia a [documentação completa](https://github.com/ThiagoIanuch/Compilador-com-ANTLR-e-Java/blob/main/Documenta%C3%A7%C3%A3o%20completa.pdf).
 
 
 ```cpp
@@ -73,7 +83,7 @@ BeginPlay()
 
 As repetições WHILE e FOR também podem ser usadas, apesar de serem somente analisadas semanticamente e não interpretadas.
 
-```
+```cpp
 BeginPlay()
 {
     int X = 1;
