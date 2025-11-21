@@ -7,8 +7,27 @@ BeginPlay()
 
     while(X <= 10)
     {
-        cout << X + 1 << "\n";
+        cout << X << "\n";
 
-        X = X + 1;
+        X++; // PODE SER TAMBÉM X = X + 1;
+        cout << X << "\n";
+    }
+
+    // O for abaixo é permitido devido aos escopos das variáveis
+    int i = 0;
+    for(int i = 0; i < 20; i++)
+    {
+        cout << i << "\n";
+    }
+
+    // Esse for também é permitido
+    // A primeira parte é possível declarar qualquer tipo de variável (mesmo que seja do tipo STRING OU BOOL)
+    // A segunda parte permite somente uma condição
+    // E a terceira parte permite qualquer expressão unária (neste caso 'j' e 'k' já foram declaradas no escopo global, por isso é funcional)
+    // Por tanto o for abaixo é aceito no compilador e também é um for válido em C++, porém é INFINITO
+    int j = 0, k = 0;
+    for(string teste = "teste1", teste2="teste2"; teste == "100"; j++, k--)
+    {
+        cout << i << "\n";
     }
 }

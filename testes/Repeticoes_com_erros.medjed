@@ -7,8 +7,31 @@ BeginPlay()
 
     while(Z <= 10) // Erro pois a variável Z não foi declarada
     {
-        cout << X + 1 << "\n";
+        cout << X << "\n";
 
-        X = X + 1;
+        X++; // PODE SER TAMBÉM X = X + 1;
+        cout << X << "\n";
+    }
+
+    // Erro pois está declarando a variável 'i' novamente no mesmo escopo
+    int i = 0;
+    for(int i = 0; i < 20; i++)
+    {
+        int i = 0;
+        cout << i << "\n";
+    }
+
+    // Erro pois a variável 'k' não foi declarada e a variável 'z' também
+    for(int i = 0; k < 90; z++)
+    {
+        cout << i << "\n";
+    }
+
+    // Erro pois a expressão unária está sendo realizada com uma variável do tipo STRING, o que não é permitido
+    // Somente FLOAT e INT podem ter operações de INCREMENTO OU DECREMENTO
+    string teste = "teste";
+    for(int i = 0; i < 20; teste++)
+    {
+        cout << i << "\n";
     }
 }
