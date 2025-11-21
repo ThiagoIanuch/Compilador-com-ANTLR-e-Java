@@ -464,11 +464,164 @@ public class Semantico extends GramaticaBaseListener {
     }
 
     @Override
-    public void enterBloco(GramaticaParser.BlocoContext ctx) {
+    public void enterRepeticao_para(GramaticaParser.Repeticao_paraContext ctx) {
         variaveis.abrirEscopo();
 
         if (expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
             comandos.add(new Comando("AbrirEscopo", null));
+        }
+    }
+
+    // Isso aqui está sendo utilizado para avaliar a expressão booleana da repetição 'PARA'
+    // Poderia provavelmente substituir os códigos da condição 'SE' e da repetição 'ENQUANTO' que são repetidos
+    // Porém seria necessária remover e realizar mais testes para saber se iria funcionar corretamente
+    // Por tanto isso só será verificado se ainda tiver tempo antes do fim do projeto
+    // Por enquanto será feito dessa forma
+    @Override
+    public void enterExpressao_booleana(GramaticaParser.Expressao_booleanaContext ctx) {
+        if (ctx.getParent() instanceof GramaticaParser.Repeticao_paraContext) {
+            GramaticaParser.ValorContext esquerda = ctx.valor(0);
+            String operador = ctx.operador().getText();
+            GramaticaParser.ValorContext direita = ctx.valor(1);
+            Object valorEsquerda = null;
+            Object valorDireita = null;
+
+            boolean resultado = true;
+
+            if (esquerda.NOME() != null) {
+                if (!variaveis.variavelDeclarada(esquerda.NOME().toString())) {
+                    adicionarErro(ctx, "a variável '" + esquerda.getText() + "' não foi declarada!");
+                    resultado = false;
+                }
+                else {
+                    valorEsquerda = variaveis.obterVariavel(esquerda.NOME().toString()).getValor();
+                }
+            }
+            else if (esquerda.expressao_aritmetica() != null) {
+                var invalidas = expressoes.verificarVariaveisEmExpressao(esquerda.expressao_aritmetica(), null);
+
+                for (var fator : invalidas) {
+                    adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
+                }
+
+                float valor = expressoes.avaliarExpressaoAritmetica(esquerda.expressao_aritmetica(), null);
+
+                if (Float.isNaN(valor)) {
+                    adicionarErro(ctx, "a expressão informada é inválida!");
+                }
+                else {
+                    valorEsquerda = expressoes.converterFloatOuInt(valor);
+                }
+            }
+            else if (esquerda.BOOLEANO() != null) {
+                valorEsquerda = esquerda.BOOLEANO().getText();
+            }
+            else if (esquerda.TEXTO() != null) {
+                valorEsquerda = esquerda.TEXTO().getText();
+            }
+            else {
+                resultado = false;
+            }
+
+            if (direita.NOME() != null) {
+                if (!variaveis.variavelDeclarada(direita.NOME().toString())) {
+                    adicionarErro(ctx, "a variável '" + direita.getText() + "' não foi declarada!");
+                    resultado = false;
+                }
+                else {
+                    valorDireita = variaveis.obterVariavel(direita.NOME().toString()).getValor();
+                }
+            }
+            else if (direita.expressao_aritmetica() != null) {
+                var invalidas = expressoes.verificarVariaveisEmExpressao(direita.expressao_aritmetica(), null);
+
+                for (var fator : invalidas) {
+                    adicionarErro(fator, "a variável '" + fator.NOME().getText() + "' não foi declarada!");
+                }
+
+                float valor = expressoes.avaliarExpressaoAritmetica(direita.expressao_aritmetica(), null);
+
+                if (Float.isNaN(valor)) {
+                    adicionarErro(ctx, "a expressão informada é inválida!");
+                }
+                else {
+                    valorDireita = expressoes.converterFloatOuInt(valor);
+                }
+            }
+            else if (direita.BOOLEANO() != null) {
+                valorDireita = direita.BOOLEANO().getText();
+            }
+            else if (direita.TEXTO() != null) {
+                valorDireita = direita.TEXTO().getText();
+            }
+            else {
+                resultado = false;
+            }
+
+            if(resultado) {
+                valorEsquerda = expressoes.converterValor(valorEsquerda.toString());
+                valorDireita = expressoes.converterValor(valorDireita.toString());
+
+                if(!expressoes.comparacaoValida(valorEsquerda, operador, valorDireita)) {
+                    adicionarErro(ctx, "a condição está com uma comparação inválida");
+                }
+                else {
+                    resultado = expressoes.compararValores(valorEsquerda, operador, valorDireita);
+                }
+            }
+
+            if(!expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
+                deveExecutarSe.push(false);
+                deveExecutarSenao.push(false);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public void enterDeclaracao_unaria(GramaticaParser.Declaracao_unariaContext ctx) {
+        for (GramaticaParser.Expressao_unariaContext variavel : ctx.expressao_unaria()) {
+            if (variavel.INCREMENTO() == null && variavel.DECREMENTO() == null) {
+                continue;
+            }
+
+            String nome = variavel.NOME().getText();
+
+            if (!variaveis.variavelDeclarada(nome)) {
+                adicionarErro(variavel, "a variável '" + nome + "' não foi declarada!");
+                continue;
+            }
+
+            if(variaveis.obterVariavel(nome).getTipo() == Tipo.STRING || variaveis.obterVariavel(nome).getTipo() == Tipo.BOOL) {
+                adicionarErro(variavel, "a variável '" + nome + "' é incompatível com expressões unárias. Somente INT e FLOAT são permitidos!");
+                continue;
+            }
+
+            Object valor = variaveis.obterVariavel(nome).getValor();
+
+            switch (variaveis.obterVariavel(nome).getTipo()) {
+                case INT:
+                    variaveis.obterVariavel(nome).setValor(((Integer) valor) + 1);
+                    break;
+                case FLOAT:
+                    variaveis.obterVariavel(nome).setValor(((Float) valor) + 1);
+                    break;
+            }
+
+            if (expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
+                comandos.add(new Comando("ExpressaoUnaria", variavel));;
+            }
+        }
+    }
+
+    @Override
+    public void enterBloco(GramaticaParser.BlocoContext ctx) {
+        if (!(ctx.getParent() instanceof GramaticaParser.Repeticao_paraContext)) {
+            variaveis.abrirEscopo();
+
+            if (expressoes.podeExecutar(ctx, deveExecutarSe, deveExecutarSenao)) {
+                comandos.add(new Comando("AbrirEscopo", null));
+            }
         }
     }
 

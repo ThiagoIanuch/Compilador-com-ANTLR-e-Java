@@ -159,6 +159,21 @@ public class Interpretador {
             else if(comando.tipo.equals("FecharEscopo")) {
                 variaveis.fecharEscopo();
             }
+            else if(comando.tipo.equals("ExpressaoUnaria")) {
+                GramaticaParser.Expressao_unariaContext ctx = (GramaticaParser.Expressao_unariaContext) comando.valor;
+
+                String nome = ctx.NOME().getText();
+                Variavel variavel = variaveis.obterVariavel(nome);
+
+                switch (variavel.getTipo()) {
+                    case INT:
+                        variavel.setValor(((Integer) variavel.getValor()) + 1);
+                        break;
+                    case FLOAT:
+                        variavel.setValor(((Float) variavel.getValor()) + 1);
+                        break;
+                }
+            }
         }
     }
 }
