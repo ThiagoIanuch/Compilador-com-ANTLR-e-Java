@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact name="Arquivos de testes">
+    <output-path>$PROJECT_DIR$/../Aplicação executável</output-path>
+    <root id="root">
+      <element id="directory" name="testes">
+        <element id="dir-copy" path="$PROJECT_DIR$/testes" />
+      </element>
+    </root>
+  </artifact>
+</component>

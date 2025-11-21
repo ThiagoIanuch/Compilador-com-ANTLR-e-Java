@@ -8,6 +8,8 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.example.generated.GramaticaLexer;
 import org.example.generated.GramaticaParser;
 
+import java.io.File;
+
 public class Main {
     public static final String VERMELHO = "\u001B[31m";
     public static final String VERDE = "\u001B[32m";
@@ -27,6 +29,12 @@ public class Main {
 
             if(!arquivoEntrada.endsWith(".medjed")) {
                 System.out.println(VERMELHO + "Erro: o arquivo precisa ter extensão .medjed" + REINICIAR);
+                return;
+            }
+
+            File arquivo = new File(arquivoEntrada);
+            if (!arquivo.exists()) {
+                System.out.println(VERMELHO + "Erro: arquivo '" + arquivoEntrada + "' não encontrado." + REINICIAR);
                 return;
             }
 
