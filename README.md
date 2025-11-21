@@ -1,28 +1,34 @@
-# Compilador em Java com ANTLR
+# Compilador com ANTLR e Java
 
-Projeto desenvolvido utilizando **ANTLR** e **Java** para criação de um **compilador** para a **avaliação A3** da disciplina **Teoria da Computação e Compiladores** da faculdade **UniCuritiba**.
+Projeto desenvolvido com **ANTLR** e  **Java** para a criação de um **compilador** para uma **linguagem de programação própria**, criado como parte da **avaliação A3** da disciplina **Teoria da Computação e Compiladores** da faculdade **UniCuritiba**.
 
 ---
 
-## 📌 1. Requisitos e como executar o projeto
+## 📦 1. Requisitos e como executar o projeto
 
-1) Baixe a versão 1.0 do projeto:
-[Compilador com ANTLR e Java - Release 1.0](https://github.com/ThiagoIanuch/Compilador-com-ANTLR-e-Java/releases/tag/1.0)
+1) Baixe a última versão do [Java](https://www.java.com/pt-BR/download/manual.jsp).
 
-2) Descompacte a pasta baixada, que conterá:
+2) Baixe a versão 1.0 do projeto:
+[Compilador com ANTLR e Java - Release 1.0](https://github.com/ThiagoIanuch/Compilador-com-ANTLR-e-Java/releases/tag/1.0).
+
+3) Descompacte a pasta baixada, que possui:
 
 - `Compilador-com-ANTLR-e-Java.jar` → arquivo executável do projeto  
 - `testes/` → pasta com os códigos de teste, que devem possuir a extensão `.medjed`. Os arquivos podem ser editados ou criados facilmente em qualquer editor de texto.
 
-3) Abra o terminal na pasta descompactada e execute:
+4) Abra o terminal na pasta descompactada e execute:
 
 - `java -jar Compilador-com-ANTLR-e-Java.jar testes/nome-do-arquivo-que-ira-compilar.medjed`
 
+<div align="center">
+    <img width="709" height="439" alt="image" src="https://github.com/user-attachments/assets/353eba27-9ec7-4440-bbf6-9a096c7d0092" />
+</div>
+
 ---
 
-## 📌 2. Sobre a Linguagem
+## 📖 2. Sobre a Linguagem
 
-A linguagem é case-sensitive e segue sintaxe semelhante ao do C++. Os arquivos para compilação devem possuir a extensão .medjed. 
+A linguagem criada é case-sensitive e segue sintaxe semelhante ao do C++. Os arquivos para compilação devem possuir a extensão .medjed. A [documentação completa](https://github.com/ThiagoIanuch/Compilador-com-ANTLR-e-Java/blob/main/Documenta%C3%A7%C3%A3o%20completa.pdf) possui todas as explicações sobre a sintaxe da linguagem criada.
 
 **A linguagem possui:**
 - Comentários
@@ -40,10 +46,9 @@ A linguagem é case-sensitive e segue sintaxe semelhante ao do C++. Os arquivos 
 
 ---
 
-## 📌 3. Exemplo básico de código 
+## 💡 3. Exemplo básico de código 
 
 Para um melhor entendimento da linguagem, leia a [documentação completa](https://github.com/ThiagoIanuch/Compilador-com-ANTLR-e-Java/blob/main/Documenta%C3%A7%C3%A3o%20completa.pdf).
-
 
 ```cpp
 BeginPlay()
