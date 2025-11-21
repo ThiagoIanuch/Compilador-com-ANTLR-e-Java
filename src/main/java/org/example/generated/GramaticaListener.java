@@ -1,4 +1,4 @@
-// Generated from C:/Users/Thiago Ianuch/Downloads/Projetos/Compilador-com-ANTLR/src/main/antlr/Gramatica.g4 by ANTLR 4.13.2
+// Generated from C:/Users/Thiago Ianuch/Downloads/Projetos/Compilador-com-ANTLR-e-Java/src/main/antlr/Gramatica.g4 by ANTLR 4.13.2
 package org.example.generated;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -78,6 +78,16 @@ public interface GramaticaListener extends ParseTreeListener {
 	 */
 	void exitRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link GramaticaParser#repeticao_para}.
+	 * @param ctx the parse tree
+	 */
+	void enterRepeticao_para(GramaticaParser.Repeticao_paraContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramaticaParser#repeticao_para}.
+	 * @param ctx the parse tree
+	 */
+	void exitRepeticao_para(GramaticaParser.Repeticao_paraContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link GramaticaParser#imprimir}.
 	 * @param ctx the parse tree
 	 */
@@ -97,6 +107,16 @@ public interface GramaticaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLer(GramaticaParser.LerContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramaticaParser#declaracao_unaria}.
+	 * @param ctx the parse tree
+	 */
+	void enterDeclaracao_unaria(GramaticaParser.Declaracao_unariaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramaticaParser#declaracao_unaria}.
+	 * @param ctx the parse tree
+	 */
+	void exitDeclaracao_unaria(GramaticaParser.Declaracao_unariaContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link GramaticaParser#tipo_variavel}.
 	 * @param ctx the parse tree
@@ -187,4 +207,24 @@ public interface GramaticaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitOperador(GramaticaParser.OperadorContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramaticaParser#expressao_unaria}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpressao_unaria(GramaticaParser.Expressao_unariaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramaticaParser#expressao_unaria}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpressao_unaria(GramaticaParser.Expressao_unariaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link GramaticaParser#operador_unario}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperador_unario(GramaticaParser.Operador_unarioContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link GramaticaParser#operador_unario}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperador_unario(GramaticaParser.Operador_unarioContext ctx);
 }

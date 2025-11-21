@@ -3,14 +3,16 @@ grammar Gramatica;
 programa:             depurar? 'BeginPlay()' '{' bloco '}' EOF;
 
 depurar:              DEPURAR;
-bloco:                (declaracao | atribuicao | condicao | repeticao_enquanto |imprimir | ler)*;
+bloco:                (declaracao ';' | atribuicao ';' | condicao | repeticao_enquanto | repeticao_para | imprimir ';' | ler ';' | declaracao_unaria ';')*;
 
-declaracao:           tipo_variavel variavel (',' variavel)* ';';
-atribuicao:           atribuicao_simples (',' atribuicao_simples)* ';';
+declaracao:           tipo_variavel variavel (',' variavel)*;
+atribuicao:           atribuicao_simples (',' atribuicao_simples)*;
 condicao:             SE '(' expressao_booleana ')' '{' bloco '}' (SENAO '{' bloco '}')?;
 repeticao_enquanto:   ENQUANTO '(' expressao_booleana ')' '{' bloco '}';
-imprimir:             IMPRIMIR ( SAIDA valor )+ ';';
-ler:                  LER (ENTRADA NOME)+ ';';
+repeticao_para:       PARA '(' declaracao ';' expressao_booleana ';'  declaracao_unaria ')' '{' bloco '}';
+imprimir:             IMPRIMIR ( SAIDA valor )+;
+ler:                  LER (ENTRADA NOME)+;
+declaracao_unaria:    expressao_unaria (',' expressao_unaria)*;
 
 tipo_variavel:        TIPO_INTEIRO | TIPO_DECIMAL | TIPO_TEXTO | TIPO_BOOLEANO;
 variavel:             NOME (ATRIBUICAO valor)?;
@@ -24,6 +26,9 @@ fator:                NOME | INTEIRO | DECIMAL | '(' expressao_aritmetica ')';
 
 expressao_booleana:   valor operador valor;
 operador:             IGUAL | DIFERENTE | MAIOR | MENOR | MAIOR_IGUAL | MENOR_IGUAL;
+
+expressao_unaria:     INCREMENTO NOME | DECREMENTO NOME | NOME INCREMENTO | NOME DECREMENTO;
+operador_unario:      INCREMENTO | DECREMENTO;
 
 DEPURAR:          '--debug';
 
@@ -47,6 +52,8 @@ MENOR:            '<';
 ATRIBUICAO:       '=';
 SAIDA:            '<<';
 ENTRADA:          '>>';
+INCREMENTO:       '++';
+DECREMENTO:       '--';
 
 TIPO_INTEIRO:     'int';
 TIPO_DECIMAL:     'float';

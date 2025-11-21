@@ -1,4 +1,4 @@
-// Generated from C:/Users/Thiago Ianuch/Downloads/Projetos/Compilador-com-ANTLR/src/main/antlr/Gramatica.g4 by ANTLR 4.13.2
+// Generated from C:/Users/Thiago Ianuch/Downloads/Projetos/Compilador-com-ANTLR-e-Java/src/main/antlr/Gramatica.g4 by ANTLR 4.13.2
 package org.example.generated;
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -101,6 +101,18 @@ public class GramaticaBaseListener implements GramaticaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterRepeticao_para(GramaticaParser.Repeticao_paraContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitRepeticao_para(GramaticaParser.Repeticao_paraContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterImprimir(GramaticaParser.ImprimirContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -120,6 +132,18 @@ public class GramaticaBaseListener implements GramaticaListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitLer(GramaticaParser.LerContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterDeclaracao_unaria(GramaticaParser.Declaracao_unariaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDeclaracao_unaria(GramaticaParser.Declaracao_unariaContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -228,6 +252,30 @@ public class GramaticaBaseListener implements GramaticaListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitOperador(GramaticaParser.OperadorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExpressao_unaria(GramaticaParser.Expressao_unariaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExpressao_unaria(GramaticaParser.Expressao_unariaContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterOperador_unario(GramaticaParser.Operador_unarioContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitOperador_unario(GramaticaParser.Operador_unarioContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

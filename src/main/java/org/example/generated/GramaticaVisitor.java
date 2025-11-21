@@ -1,4 +1,4 @@
-// Generated from C:/Users/Thiago Ianuch/Downloads/Projetos/Compilador-com-ANTLR/src/main/antlr/Gramatica.g4 by ANTLR 4.13.2
+// Generated from C:/Users/Thiago Ianuch/Downloads/Projetos/Compilador-com-ANTLR-e-Java/src/main/antlr/Gramatica.g4 by ANTLR 4.13.2
 package org.example.generated;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -53,6 +53,12 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitRepeticao_enquanto(GramaticaParser.Repeticao_enquantoContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#repeticao_para}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRepeticao_para(GramaticaParser.Repeticao_paraContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#imprimir}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -64,6 +70,12 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLer(GramaticaParser.LerContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#declaracao_unaria}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitDeclaracao_unaria(GramaticaParser.Declaracao_unariaContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link GramaticaParser#tipo_variavel}.
 	 * @param ctx the parse tree
@@ -118,4 +130,16 @@ public interface GramaticaVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitOperador(GramaticaParser.OperadorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#expressao_unaria}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpressao_unaria(GramaticaParser.Expressao_unariaContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link GramaticaParser#operador_unario}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOperador_unario(GramaticaParser.Operador_unarioContext ctx);
 }
